@@ -42,7 +42,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:20:00"
+      walltime: "00:25:00"
     external_data: true
   postwxvx_grid:
     groups:
@@ -64,11 +64,11 @@ tasks:
     external_data: false
 common:
   cycles:
-    start: '2021-12-21T00:00:00'
+    start: '2021-12-22T00:00:00'
     step: 0
-    stop: '2021-12-21T00:00:00'
+    stop: '2021-12-22T00:00:00'
   meta:
-    levels: &levels [200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950, 975, 1000]
+    levels: &levels [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 850, 925, 1000]
   variables:
     2t:
       level_type: heightAboveGround
@@ -85,13 +85,13 @@ common:
       levels:
       - 10
       name: 10v
+    sp:
+      level_type: surface
+      name: sp
     gh:
       level_type: isobaricInhPa
       levels: *levels
       name: gh
-    sp:
-      level_type: surface
-      name: sp
     t:
       level_type: isobaricInhPa
       levels: *levels
@@ -131,8 +131,8 @@ vx_grid2grid:
 vx_grid2obs:
   leadtimes:
     start: 0
-    step: 3
-    stop: 9
+    step: 6
+    stop: 18
   truth:
     name: '{{ app.truth_obs_model }}'
     type: point
