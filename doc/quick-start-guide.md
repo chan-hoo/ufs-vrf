@@ -26,7 +26,7 @@ Choose one of the following methods to clone the repository.
 
 ```bash
 cd ufs-vrf/sorc
-./build_wxvx4ufs.sh
+./build_ufsvrf.sh
 ```
 
 ## 2. Activate the wxvx Environment
