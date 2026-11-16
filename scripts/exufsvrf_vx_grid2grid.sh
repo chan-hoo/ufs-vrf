@@ -5,7 +5,7 @@ set -xue
 ulimit -s unlimited; ulimit -a;
 
 # Load the shared YAML utility.
-source "${USHwxvx}/yaml_utils.sh"
+source "${USHufsvrf}/yaml_utils.sh"
 config_common="${exp_case_path}/configs/config_common.yaml"
 
 # Read common configuration values.

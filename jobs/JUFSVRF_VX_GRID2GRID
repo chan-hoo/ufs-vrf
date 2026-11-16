@@ -6,11 +6,11 @@ export PS4='+ $SECONDS + '
 # ---------------------------------------------------------------------
 # Set the NCO standard environment variables (Table 1, pp.4)
 # ---------------------------------------------------------------------
-export USHwxvx="${HOMEwxvx}/ush"
-export EXECwxvx="${HOMEwxvx}/exec"
-export PARMwxvx="${HOMEwxvx}/parm"
-export FIXwxvx="${HOMEwxvx}/fix"
-export SCRIPTSwxvx="${HOMEwxvx}/scripts"
+export USHufsvrf="${HOMEufsvrf}/ush"
+export EXECufsvrf="${HOMEufsvrf}/exec"
+export PARMufsvrf="${HOMEufsvrf}/parm"
+export FIXufsvrf="${HOMEufsvrf}/fix"
+export SCRIPTSufsvrf="${HOMEufsvrf}/scripts"
 
 # ---------------------------------------------------------------------
 # Create a temp working directory (DATA) and cd into it.
@@ -22,8 +22,8 @@ cd $DATA
 # ---------------------------------------------------------------------
 # Define NCO environment variables and set COM type definitions.
 # ---------------------------------------------------------------------
-export NET="${NET:-wxvx}"
-export RUN="${RUN:-wxvx}"
+export NET="${NET:-ufsvrf}"
+export RUN="${RUN:-ufsvrf}"
 
 # Run setpdy to initialize PDYm and PDYp variables
 export cycle="${cycle:-t${cyc}z}"
@@ -52,7 +52,7 @@ export pgmout="${DATA}/OUTPUT.$$"
 # ---------------------------------------------------------------------
 # Call ex-script
 # ---------------------------------------------------------------------
-${SCRIPTSwxvx}/exufsvrf_vx_grid2grid.sh
+${SCRIPTSufsvrf}/exufsvrf_vx_grid2grid.sh
 export err=$?; err_chk
 
 # ---------------------------------------------------------------------
