@@ -20,16 +20,29 @@ config_common:
   - nco_vars
 task_list:
   - vx_grid2grid
+  - vx_grid2obs
   - postwxvx_grid
+  - postwxvx_obs
 tasks:
   vx_grid2grid:
     groups:
       - common
+      - vx_common
       - vx_grid2grid
     hpc:
       memory_per_node: 128G
       nprocs: 1
       walltime: "00:20:00"
+    external_data: true
+  vx_grid2obs:
+    groups:
+      - common
+      - vx_common
+      - vx_grid2obs
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:25:00"
     external_data: true
   postwxvx_grid:
     groups:
@@ -40,17 +53,22 @@ tasks:
       nprocs: 1
       walltime: "00:10:00"
     external_data: false
+  postwxvx_obs:
+    groups:
+      - common
+      - postwxvx_obs
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
+    external_data: false
 common:
   cycles:
-    start: '2021-12-21T00:00:00'
+    start: '2021-12-22T00:00:00'
     step: 0
-    stop: '2021-12-21T00:00:00'
-  leadtimes:
-    start: 0
-    step: 24
-    stop: 72
+    stop: '2021-12-22T00:00:00'
   meta:
-    levels: &levels [200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 925, 950, 975, 1000]
+    levels: &levels [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 850, 925, 1000]
   variables:
     2t:
       level_type: heightAboveGround
@@ -67,13 +85,13 @@ common:
       levels:
       - 10
       name: 10v
+    sp:
+      level_type: surface
+      name: sp
     gh:
       level_type: isobaricInhPa
       levels: *levels
       name: gh
-    sp:
-      level_type: surface
-      name: sp
     t:
       level_type: isobaricInhPa
       levels: *levels
@@ -86,7 +104,7 @@ common:
       level_type: isobaricInhPa
       levels: *levels
       name: v
-vx_grid2grid:
+vx_common:
   forecast:
     name: '{{ app.exp_case_name }}'
     path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.master.f{{ "%03d" % fh }}.grib2'
@@ -96,15 +114,38 @@ vx_grid2grid:
   paths:
     grids:
       forecast: '{{ meta.workdir }}/grids/forecast'
-      truth: '{{ meta.workdir }}/grids/truth'
-    obs: '{{ meta.workdir }}/obs'
     run: '{{ meta.workdir }}'
+vx_grid2grid:
+  leadtimes:
+    start: 0
+    step: 24
+    stop: 72
+  paths:
+    grids:
+      truth: '{{ meta.workdir }}/grids/truth'
   truth:
     name: '{{ app.truth_grid_model }}'
     type: grid
     url: '{{ truth_data.truth_grid_urls[app.truth_grid_model] }}'
   ncdiffs: true
+vx_grid2obs:
+  leadtimes:
+    start: 0
+    step: 6
+    stop: 18
+  truth:
+    name: '{{ app.truth_obs_model }}'
+    type: point
+    url: '{{ truth_data.truth_obs_urls[app.truth_obs_model] }}'
+  regrid:
+    method: BILIN
+    to: G104
+  paths:
+    obs: '{{ meta.workdir }}/obs'
 postwxvx_grid:
   work_path: '{{ DATA }}'
   stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
+postwxvx_obs:
+  work_path: '{{ DATA }}'
+  stat_prefix: 'point_stat_{{ app.exp_case_name }}'
 
