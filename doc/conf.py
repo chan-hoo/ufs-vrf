@@ -1,8 +1,8 @@
-"""Sphinx configuration for wxvx4ufs documentation."""
+"""Sphinx configuration for ufs-vrf documentation."""
 
-project = "wxvx4ufs"
-copyright = "2026, wxvx4ufs contributors"
-author = "wxvx4ufs contributors"
+project = "ufs-vrf"
+copyright = "2026, ufs-vrf contributors"
+author = "ufs-vrf contributors"
 
 extensions = ["myst_parser"]
 

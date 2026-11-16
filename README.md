@@ -1,8 +1,8 @@
-# wxvx4ufs
+# ufs-vrf
 
 **Weather Verification (wxvx) for Unified Forecat System (UFS) including Global Workflow, EAGLE, and RRFS**
 
-This repository provides scripts to install and configure [`wxvx`](https://github.com/NOAA-GSL/wxvx) for use with UFS applications, including Global workflow and RRFS workflow, on NOAA RDHPCS platforms ([user's guide](https://wxvx4ufs.readthedocs.io/en/latest/index.html)).
+This repository provides scripts to install and configure [`wxvx`](https://github.com/NOAA-GSL/wxvx) for use with UFS applications, including Global workflow and RRFS workflow, on NOAA RDHPCS platforms ([user's guide](https://ufs-vrf.readthedocs.io/en/latest/index.html)).
 
 ## 1. Build and Installation
 
@@ -12,18 +12,18 @@ Choose one of the following methods to clone the repository.
 
 - SSH (if you have configured an SSH key for GitHub):
 ```bash
-git clone git@github.com:chan-hoo/wxvx4ufs.git
+git clone git@github.com:chan-hoo/ufs-vrf.git
 ```
 
 - HTTPS:
 ```bash
-git clone https://github.com/chan-hoo/wxvx4ufs.git
+git clone https://github.com/chan-hoo/ufs-vrf.git
 ```
 
 ### Step 2. Run the installation script
 
 ```bash
-cd wxvx4ufs/sorc
+cd ufs-vrf/sorc
 ./build_wxvx4ufs.sh
 ```
 
@@ -48,7 +48,7 @@ conda deactivate
 The configuration YAML files and set-up script are located in the `parm` directory:
 
 ```bash
-cd wxvx4ufs/parm
+cd ufs-vrf/parm
 ```
 
 The main configuration files are:

@@ -1,7 +1,7 @@
-wxvx4ufs Documentation
+ufs-vrf Documentation
 ======================
 
-Welcome to the **wxvx4ufs** documentation.
+Welcome to the **ufs-vrf** documentation.
 
 .. toctree::
    :maxdepth: 2
