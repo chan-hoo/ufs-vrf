@@ -55,4 +55,6 @@ fi
 
 # Copy result files/directories to COMOUT
 cp -rp ${DATA}/plots ${COMOUT}/grid2obs_plots
-cp -rp ${DATA}/stats ${COMOUT}/grid2obs_stats
+cp -rp ${DATA}/stats grid2obs_stats
+find grid2obs_stats -type f ! \( -name "*.stat" -o -name "*_pairs.nc" \) -delete
+cp -rp grid2obs_stats ${COMOUT}/
