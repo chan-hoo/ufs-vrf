@@ -1,5 +1,5 @@
 help([[
-Modules necessary for wxvx4ufs on Hercules
+Modules necessary for ufs-vrf on Hercules
 ]])
 
 prepend_path("MODULEPATH", "/apps/contrib/spack-stack/spack-stack-1.9.3/envs/ue-oneapi-2024.2.1/install/modulefiles/Core")

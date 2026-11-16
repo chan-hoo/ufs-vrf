@@ -13,10 +13,10 @@ platform=$(read_yaml "${config_common}" "platform")
 
 # Copy input files to temporary working directory.
 mkdir -p ${DATA}/run
-cp -rp ${COMIN}/grid2grid_stats ${DATA}/run/stats
+cp -rp ${COMIN}/grid2obs_stats ${DATA}/run/stats
 
 # Update configuration file with temporary working directory.
-config_fn="config_postwxvx_grid.yaml"
+config_fn="config_postwxvx_obs.yaml"
 config_content=$(<"${exp_case_path}/configs/${config_fn}")
 printf '%s\n' "${config_content//'{{ DATA }}'/${DATA}}" > "${DATA}/${config_fn}"
 
@@ -27,27 +27,27 @@ export pgm="eagle-tools postwxvx"
 time ${pgm} ${config_fn}
 export err=$?; err_chk
 if [[ $err != 0 ]]; then
-  err_exit "eagle-tools: postwxvx_grid failed"
+  err_exit "eagle-tools: postwxvx_obs failed"
 fi
 
 # Copy result files/directories to COMOUT
-mkdir -p ${DATA}/postwxvx_grid
-mv -- *.nc ${DATA}/postwxvx_grid/
-cp -rp ${DATA}/postwxvx_grid ${COMOUT}/.
+mkdir -p ${DATA}/postwxvx_obs
+mv -- *.nc ${DATA}/postwxvx_obs/
+cp -rp ${DATA}/postwxvx_obs ${COMOUT}/.
 
 # ---------------------------
 # Plotting
 # ---------------------------
 # Plot result NetCDF files
-ncdir="${DATA}/postwxvx_grid"
+ncdir="${DATA}/postwxvx_obs"
 spatial_stats_root="${DATA}/run/stats"
-basic_outdir="${DATA}/plots_grid_basic"
+basic_outdir="${DATA}/plots_obs_basic"
 mkdir -p ${basic_outdir}
-spatial_outdir="${DATA}/plots_grid_spatial_stats"
+spatial_outdir="${DATA}/plots_obs_spatial_stats"
 mkdir -p ${spatial_outdir}
 
 cat > plot_config.yaml <<EOF
-cartopy_ne_path: '${FIXwxvx}/data_${platform}/NaturalEarth'
+cartopy_ne_path: '${FIXufsvrf}/data_${platform}/NaturalEarth'
 ncdir: '${ncdir}'
 spatial_stats_root: '${spatial_stats_root}'
 basic_outdir: '${basic_outdir}'
@@ -56,9 +56,8 @@ EOF
 
 python ${USHwxvx}/plot_wxvx.py plot_config.yaml
 if [ $? -ne 0 ]; then
-  err_exit "postwxvx_grid plot failed"
+  err_exit "postwxvx_obs plot failed"
 fi
 
 # Copy result files/directories to COMOUT
 cp -rp ${basic_outdir} ${COMOUT}/.
-cp -rp ${spatial_outdir} ${COMOUT}/.

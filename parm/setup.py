@@ -795,7 +795,7 @@ class ConfigGenerator:
                 "envir": envir,
                 "exp_case_path": str(exp_case_path),
                 "external_data": external_data,
-                "HOMEwxvx": str(self.repo_dir),
+                "HOMEufsvrf": str(self.repo_dir),
                 "KEEPDATA": keepdata,
                 "memory_flag": bool(hpc.get("memory_per_node")),
                 "memory_per_node": hpc.get("memory_per_node"),
@@ -835,7 +835,7 @@ class ConfigGenerator:
             # Use the directory and suffix returned by the helper.
             output_file = (
                 job_card_dir
-                / f"jwxvx_{task_name}{job_card_suffix}"
+                / f"jufsvrf_{task_name}{job_card_suffix}"
             )
     
             with output_file.open("w", encoding="utf-8") as stream:
@@ -1136,7 +1136,7 @@ class ConfigGenerator:
 
         self.config["nco_vars"] = resolve_config_references(
             self.config["nco_vars"],
-            {"HOMEwxvx": str(self.repo_dir), "app": self.config["app"]},
+            {"HOMEufsvrf": str(self.repo_dir), "app": self.config["app"]},
         )
 
         output_dir = self.get_output_dir()

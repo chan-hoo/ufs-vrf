@@ -8,12 +8,12 @@ app:
   workflow_manager: ecflow
   workflow_type: hrrrcast
 nco_vars:
-  COMINhrrrcast: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
+  COMINhrrrcast: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
   NET: test_net
-  OPS_PATH: '{{ HOMEwxvx }}/parm/PTMP'
+  OPS_PATH: '{{ HOMEufsvrf }}/parm/PTMP'
   RUN: '{{ app.exp_case_name }}'
 config_common:
   - app

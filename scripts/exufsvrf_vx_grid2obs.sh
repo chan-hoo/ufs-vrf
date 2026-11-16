@@ -9,26 +9,24 @@ source "${USHwxvx}/yaml_utils.sh"
 config_common="${exp_case_path}/configs/config_common.yaml"
 
 # Read common configuration values.
-external_data=$(read_yaml "${config_common}" "external_data_vx_grid2grid")
+external_data=$(read_yaml "${config_common}" "external_data_vx_grid2obs")
 external_data=$(printf '%s' "${external_data}" | tr '[:upper:]' '[:lower:]')
 platform=$(read_yaml "${config_common}" "platform")
 run_type=$(read_yaml "${config_common}" "run_type")
-truth_grid_model=$(read_yaml "${config_common}" "truth_grid_model")
 workflow_type=$(read_yaml "${config_common}" "workflow_type")
 
 # Copy pre-downloaded data files for c-test to temporary working directory.
 if [[ "${run_type}" == "ctest" ]]; then
   # Truth data
   if [[ "${external_data}" == "false" ]]; then
-    mkdir -p ${DATA}/grids
-    cp -rp "${FIXwxvx}/data_${platform}/ctest/${workflow_type}/truth_grids/${truth_grid_model}/truth" ${DATA}/grids/.
+    cp -rp "${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/obs" ${DATA}/.
   fi
 fi
 
 # Copy pre-processed forecast data if needed.
 if [[ "${workflow_type}" == "eagle" ]]; then
   ## Fallback data
-  fallback_prewxvx="${FIXwxvx}/data_${platform}/ctest/${workflow_type}/post_prewxvx"
+  fallback_prewxvx="${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/post_prewxvx"
   if [[ -d "${COMIN}/post_prewxvx" ]] && [[ -n "$(ls -A "${COMIN}/post_prewxvx")" ]]; then
     cp -rp "${COMIN}/post_prewxvx" "${DATA}/."
     echo "Using prewxvx results from ${COMIN}/post_prewxvx"
@@ -41,7 +39,7 @@ if [[ "${workflow_type}" == "eagle" ]]; then
 fi
 
 # Update configuration file with temporary working directory.
-config_fn="config_vx_grid2grid.yaml"
+config_fn="config_vx_grid2obs.yaml"
 config_content=$(<"${exp_case_path}/configs/${config_fn}")
 printf '%s\n' "${config_content//'{{ DATA }}'/${DATA}}" > "${DATA}/${config_fn}"
 
@@ -52,11 +50,11 @@ export pgm="wxvx"
 time ${pgm} -c ${config_fn} -t plots -f
 export err=$?; err_chk
 if [[ $err != 0 ]]; then
-  err_exit "wxvx: vx_grid2grid failed"
+  err_exit "wxvx: vx_grid2obs failed"
 fi
 
 # Copy result files/directories to COMOUT
-cp -rp ${DATA}/plots ${COMOUT}/grid2grid_plots
-cp -rp ${DATA}/stats grid2grid_stats
-find grid2grid_stats -type f ! \( -name "*.stat" -o -name "*_pairs.nc" \) -delete
-cp -rp grid2grid_stats ${COMOUT}/
+cp -rp ${DATA}/plots ${COMOUT}/grid2obs_plots
+cp -rp ${DATA}/stats grid2obs_stats
+find grid2obs_stats -type f ! \( -name "*.stat" -o -name "*_pairs.nc" \) -delete
+cp -rp grid2obs_stats ${COMOUT}/

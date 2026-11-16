@@ -8,12 +8,12 @@ app:
   workflow_manager: ecflow
   workflow_type: eagle
 nco_vars:
-  COMINeagle: '{{ HOMEwxvx }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
+  COMINeagle: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
   NET: test_net
-  OPS_PATH: '{{ HOMEwxvx }}/parm/PTMP'
+  OPS_PATH: '{{ HOMEufsvrf }}/parm/PTMP'
   RUN: '{{ app.exp_case_name }}'
 config_common:
   - app

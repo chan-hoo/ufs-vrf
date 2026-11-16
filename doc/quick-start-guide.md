@@ -134,13 +134,13 @@ Submit the desired task.
 - Slurm (Ursa / Hercules / Orion / Gaea-C6):
 
   ```bash
-  sbatch jwxvx_[task_name]
+  sbatch jufsvrf_[task_name]
   ```
 
 - PBS Pro (Derecho):
 
   ```bash
-  qsub jwxvx_[task_name]
+  qsub jufsvrf_[task_name]
   ```
 
 ## 5. Results and Log Files

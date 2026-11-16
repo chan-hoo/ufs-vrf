@@ -1,5 +1,5 @@
 help([[
-Modules necessary for wxvx4ufs on Gaea-C6
+Modules necessary for ufs-vrf on Gaea-C6
 ]])
 
 prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-1.9.3/envs/ue-oneapi-2024.2.1/install/modulefiles/Core")
