@@ -57,7 +57,7 @@ The main configuration files are:
 
 Copy the sample configuration file for EAGLE ctest:
 ```bash
-cp config_samples/config_base_eagle_ctest.yaml config.yaml
+cp config_samples/config_base_eagle_gfs_ctest.yaml config.yaml
 ```
 
 Before proceeding, review the parameters `account` ,`exp_case_name`, and `platform`.
@@ -68,8 +68,10 @@ vim config.yaml
 - Available options:
   - `platform`: ursa, hercules, gaea-c6, orion, derecho
   - `run_type`: ctest
+  - `truth_grid_model`: GFS, HRRR
+  - `truth_obs_model`: PREPBUFR
   - `workflow_manager`: ecflow, None
-  - `workflow_type`: eagle, hrrrcast
+  - `workflow_type`: eagle, hrrrcast, global_workflow
 
 Run the set-up script to generate the experimental case configuration and supporting directories:
 
