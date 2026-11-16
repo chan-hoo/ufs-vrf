@@ -119,7 +119,7 @@ export exp_case_path="{{ exp_case_path }}"
 # ---------------------------------------------------------------------
 # Run J-job script
 # ---------------------------------------------------------------------
-${HOMEufsvrf}/jobs/JWXVX_{{ task_name_upper }}
+${HOMEufsvrf}/jobs/JUFSVRF_{{ task_name_upper }}
 
 {%- if workflow_manager == "ecflow" %}
 
