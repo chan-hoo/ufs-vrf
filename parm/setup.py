@@ -193,7 +193,7 @@ class ConfigGenerator:
     
         self.config_file = config_file.resolve()
     
-        # The wxvx4gw repository root is the parent of parm/.
+        # The ufs-vrf repository root is the parent of parm/.
         self.repo_dir = self.script_dir.parent
     
         # Experiment cases directory under the parm directory.
@@ -331,7 +331,7 @@ class ConfigGenerator:
         Determine the output directory using app.exp_case_name.
 
         Expected path:
-            wxvx4gw/../exp_cases/<exp_case_name>/configs/
+            ufs-vrf/parm/exp_cases/<exp_case_name>/configs/
         """
         if "app" not in self.config:
             raise ValueError(
