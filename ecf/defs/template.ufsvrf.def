@@ -14,15 +14,15 @@ suite {{ exp_case_name }}
 {% endif %}
 {% if "vx_grid2grid" in task_list %}
         task jufsvrf_vx_grid2grid
-        {% if "prewxvx" in task_list %}
+    {% if "prewxvx" in task_list %}
             trigger jufsvrf_prewxvx == complete
-  {% endif %}
+    {% endif %}
 {% endif %}
 {% if "vx_grid2obs" in task_list %}
         task jufsvrf_vx_grid2obs
-        {% if "prewxvx" in task_list %}
+    {% if "prewxvx" in task_list %}
             trigger jufsvrf_prewxvx == complete
-  {% endif %}
+    {% endif %}
 {% endif %}
 {% if "postwxvx_grid" in task_list %}
         task jufsvrf_postwxvx_grid
