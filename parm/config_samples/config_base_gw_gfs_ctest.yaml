@@ -32,7 +32,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:20:00"
+      walltime: "00:30:00"
     external_data: true
   vx_grid2obs:
     groups:
@@ -42,7 +42,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:25:00"
+      walltime: "01:00:00"
     external_data: true
   postwxvx_grid:
     groups:
@@ -51,7 +51,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:25:00"
     external_data: false
   postwxvx_obs:
     groups:
@@ -60,7 +60,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:20:00"
     external_data: false
 common:
   cycles:
