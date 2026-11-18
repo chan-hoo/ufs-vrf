@@ -9,7 +9,7 @@ source "${USHufsvrf}/yaml_utils.sh"
 config_common="${exp_case_path}/configs/config_common.yaml"
 
 # Read common configuration values.
-external_data=$(read_yaml "${config_common}" "external_data_vx_grid_prcp")
+external_data=$(read_yaml "${config_common}" "external_data_vx_grid2prcp")
 external_data=$(printf '%s' "${external_data}" | tr '[:upper:]' '[:lower:]')
 platform=$(read_yaml "${config_common}" "platform")
 run_type=$(read_yaml "${config_common}" "run_type")
@@ -41,7 +41,7 @@ if [[ "${workflow_type}" == "eagle" ]]; then
 fi
 
 # Update configuration file with temporary working directory.
-config_fn="config_vx_grid_prcp.yaml"
+config_fn="config_vx_grid2prcp.yaml"
 config_content=$(<"${exp_case_path}/configs/${config_fn}")
 printf '%s\n' "${config_content//'{{ DATA }}'/${DATA}}" > "${DATA}/${config_fn}"
 
@@ -52,7 +52,7 @@ export pgm="wxvx"
 time ${pgm} -c ${config_fn} -t plots -f
 export err=$?; err_chk
 if [[ $err != 0 ]]; then
-  err_exit "wxvx: vx_grid_prcp failed"
+  err_exit "wxvx: vx_grid2prcp failed"
 fi
 
 # Copy result files/directories to COMOUT

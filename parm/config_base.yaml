@@ -23,7 +23,7 @@ task_list:
   - prewxvx
   - vx_grid2grid
   - vx_grid2obs
-  - vx_grid_prcp
+  - vx_grid2prcp
   - postwxvx_grid
   - postwxvx_obs
 # Shared leadtimes belong in common. For different verification windows,
@@ -62,12 +62,12 @@ tasks:
       nprocs: 1
       walltime: "00:15:00"
     external_data: true
-  vx_grid_prcp:
+  vx_grid2prcp:
     groups:
       - common
       - var_prcp
       - vx_common
-      - vx_grid_prcp
+      - vx_grid2prcp
     hpc:
       memory_per_node: 128G
       nprocs: 1
@@ -197,7 +197,7 @@ vx_grid2obs:
     to: G104
   paths:
     obs: '{{ meta.workdir }}/obs'
-vx_grid_prcp:
+vx_grid2prcp:
   truth:
     name: '{{ app.truth_prcp_model }}'
     type: grid
