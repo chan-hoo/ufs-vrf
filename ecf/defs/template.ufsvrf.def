@@ -24,6 +24,12 @@ suite {{ exp_case_name }}
             trigger jufsvrf_prewxvx == complete
     {% endif %}
 {% endif %}
+{% if "vx_grid_prcp" in task_list %}
+        task jufsvrf_vx_grid_prcp
+    {% if "prewxvx" in task_list %}
+            trigger jufsvrf_prewxvx == complete
+    {% endif %}
+{% endif %}
 {% if "postwxvx_grid" in task_list %}
         task jufsvrf_postwxvx_grid
             trigger jufsvrf_vx_grid2grid == complete
