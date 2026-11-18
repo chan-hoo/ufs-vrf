@@ -25,6 +25,7 @@ tasks:
   vx_grid2grid:
     groups:
       - common
+      - var_common
       - vx_grid2grid
     hpc:
       memory_per_node: 128G
@@ -34,6 +35,7 @@ tasks:
   postwxvx_grid:
     groups:
       - common
+      - var_common
       - postwxvx_grid
     hpc:
       memory_per_node: 128G
@@ -49,6 +51,7 @@ common:
     start: 0
     step: 1
     stop: 6
+var_common:
   meta:
     levels: &levels [200, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 825, 850, 875, 900, 925, 950, 975, 1000]
   variables:

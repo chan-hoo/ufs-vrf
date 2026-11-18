@@ -395,7 +395,7 @@ class ConfigGenerator:
         Special handling:
           - common: add metadata.
           - prewxvx: generate frequency, lead time, dates, and variables.
-          - postwxvx_grid / postwxvx_obs: transform common configuration.
+          - postwxvx_grid / postwxvx_obs: transform common and var_common.
         """
         if not isinstance(group_names, list):
             raise ValueError(
@@ -460,7 +460,7 @@ class ConfigGenerator:
                     )
     
         # -------------------------------------------------------------
-        # Exclude common for tasks that require transformed parameters.
+        # Exclude source groups for tasks that require transformed parameters.
         # -------------------------------------------------------------
         special_tasks = {
             "prewxvx",
@@ -471,7 +471,7 @@ class ConfigGenerator:
         if task_name in special_tasks:
             group_names = [
                 group for group in group_names
-                if group != "common"
+                if group not in {"common", "var_common"}
             ]
 
         # Merge the remaining task configuration groups.
@@ -501,10 +501,11 @@ class ConfigGenerator:
         # -------------------------------------------------------------
         if task_name in special_tasks:
             common = self.config.get("common", {})
+            var_common = self.config.get("var_common", {})
     
             cycles = common.get("cycles", {})
             leadtimes = deepcopy(common.get("leadtimes", {}))
-            variables = common.get("variables", {})
+            variables = var_common.get("variables", {})
 
             leadtime_groups = {
                 "prewxvx": ("vx_grid2grid", "prewxvx"),
@@ -553,7 +554,7 @@ class ConfigGenerator:
                 if stop is not None:
                     task_config["end_date"] = format_datetime(stop)
     
-                # Preserve the order of variables in config_base.yaml.
+                # Preserve the order of variables in var_common.
                 task_config["vars_of_interest"] = list(
                     variables.keys()
                 )

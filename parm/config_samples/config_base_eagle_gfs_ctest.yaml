@@ -41,6 +41,7 @@ tasks:
   vx_grid2grid:
     groups:
       - common
+      - var_common
       - vx_common
       - vx_grid2grid
     hpc:
@@ -51,6 +52,7 @@ tasks:
   vx_grid2obs:
     groups:
       - common
+      - var_common
       - vx_common
       - vx_grid2obs
     hpc:
@@ -61,6 +63,7 @@ tasks:
   postwxvx_grid:
     groups:
       - common
+      - var_common
       - postwxvx_grid
     hpc:
       memory_per_node: 128G
@@ -70,6 +73,7 @@ tasks:
   postwxvx_obs:
     groups:
       - common
+      - var_common
       - postwxvx_obs
     hpc:
       memory_per_node: 128G
@@ -85,6 +89,7 @@ common:
     start: '6:00:00'
     step: '6:00:00'
     stop: '24'
+var_common:
   variables:
     t2m:
       level_type: heightAboveGround
