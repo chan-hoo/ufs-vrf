@@ -4,6 +4,8 @@ truth_data:
     HRRR: https://noaa-hrrr-bdp-pds.s3.amazonaws.com/hrrr.{{ yyyymmdd }}/conus/hrrr.t{{ hh }}z.wrfprsf{{ "%02d" % fh }}.grib2
   truth_obs_urls:
     PREPBUFR: https://noaa-reanalyses-pds.s3.amazonaws.com/observations/reanalysis/conv/prepbufr/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/prepbufr/gdas.{{ yyyymmdd }}.t{{ hh }}z.prepbufr.nr
+  truth_prcp_urls:
+    STAGEIV: https://nomads.ncep.noaa.gov/pub/data/nccf/com/pcpanl/prod/pcpanl.{{ yyyymmdd }}/st4_conus.{{ yyyymmdd }}{{ hh }}.01h.grb2
 
 platforms:
   derecho:

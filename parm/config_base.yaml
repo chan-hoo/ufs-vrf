@@ -1,14 +1,15 @@
 app:
   account: epic
-  exp_case_name: test_gw_gfs
+  exp_case_name: test_eagle_lam
   platform: ursa
   run_type: ctest
-  truth_grid_model: GFS
+  truth_grid_model: HRRR
   truth_obs_model: PREPBUFR
+  truth_prcp_model: STAGEIV
   workflow_manager: None
-  workflow_type: global_workflow
+  workflow_type: eagle
 nco_vars:
-  COMINglobal_workflow: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
+  COMINeagle: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test
   KEEPDATA: 'YES'
   model_ver: v0.0.1
@@ -19,11 +20,26 @@ config_common:
   - app
   - nco_vars
 task_list:
+  - prewxvx
   - vx_grid2grid
   - vx_grid2obs
+  - vx_grid_prcp
   - postwxvx_grid
   - postwxvx_obs
+# Shared leadtimes belong in common. For different verification windows,
+# vx_grid2grid.leadtimes drives prewxvx and postwxvx_grid, while
+# vx_grid2obs.leadtimes drives postwxvx_obs. prewxvx.leadtimes can override
+# the grid leadtimes for prewxvx alone.
 tasks:
+  prewxvx:
+    groups:
+      - common
+      - prewxvx
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
+    external_data: false
   vx_grid2grid:
     groups:
       - common
@@ -32,7 +48,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:20:00"
+      walltime: "00:10:00"
     external_data: true
   vx_grid2obs:
     groups:
@@ -42,7 +58,17 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:25:00"
+      walltime: "00:15:00"
+    external_data: true
+  vx_grid_prcp:
+    groups:
+      - common
+      - vx_common
+      - vx_grid_prcp
+    hpc:
+      memory_per_node: 128G
+      nprocs: 1
+      walltime: "00:10:00"
     external_data: true
   postwxvx_grid:
     groups:
@@ -51,7 +77,7 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:05:00"
     external_data: false
   postwxvx_obs:
     groups:
@@ -60,79 +86,97 @@ tasks:
     hpc:
       memory_per_node: 128G
       nprocs: 1
-      walltime: "00:10:00"
+      walltime: "00:05:00"
     external_data: false
 common:
   cycles:
-    start: '2021-12-22T00:00:00'
+    start: '2026-11-18T06:00:00'
     step: 0
-    stop: '2021-12-22T00:00:00'
-  meta:
-    levels: &levels [50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 850, 925, 1000]
+    stop: '2026-11-18T06:00:00'
+  leadtimes:
+    start: '6:00:00'
+    step: '6:00:00'
+    stop: '24'
   variables:
-    2t:
+    t2m:
       level_type: heightAboveGround
       levels:
       - 2
       name: 2t
-    10u:
+    gh:
+      level_type: isobaricInhPa
+      levels:
+      - 500
+      name: gh
+    sp:
+      level_type: surface
+      name: sp
+    t:
+      level_type: isobaricInhPa
+      levels:
+      - 850
+      name: t
+    u:
+      level_type: isobaricInhPa
+      levels:
+      - 250
+      name: u
+    u10:
       level_type: heightAboveGround
       levels:
       - 10
       name: 10u
-    10v:
+    v:
+      level_type: isobaricInhPa
+      levels:
+      - 250
+      name: v
+    v10:
       level_type: heightAboveGround
       levels:
       - 10
       name: 10v
-    sp:
-      level_type: surface
-      name: sp
-    gh:
-      level_type: isobaricInhPa
-      levels: *levels
-      name: gh
-    t:
-      level_type: isobaricInhPa
-      levels: *levels
-      name: t
-    u:
-      level_type: isobaricInhPa
-      levels: *levels
-      name: u
-    v:
-      level_type: isobaricInhPa
-      levels: *levels
-      name: v
 vx_common:
   forecast:
+    coords:
+      latitude: latitude
+      level: level
+      longitude: longitude
+      time:
+        inittime: forecast_reference_time
+        validtime: time
     name: '{{ app.exp_case_name }}'
-    path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.master.f{{ "%03d" % fh }}.grib2'
+    path: '{{ meta.post_files }}/{{ prewxvx.model_type }}.{{ yyyymmdd[:4] }}-{{ yyyymmdd[4:6] }}-{{ yyyymmdd[6:8] }}T{{ hh }}.{{ "%02d" % meta.max_leadtime }}h.nc'
+    projection:
+      a: 6371229
+      b: 6371229
+      lat_0: 38.5
+      lat_1: 38.5
+      lat_2: 38.5
+      lon_0: 262.5
+      proj: lcc
   meta:
-    gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
     workdir: '{{ DATA }}'
+    grids: '{{ meta.workdir }}/grids'
+    max_leadtime: 24
+    post_files: '{{ meta.workdir }}/post_prewxvx'
   paths:
     grids:
       forecast: '{{ meta.workdir }}/grids/forecast'
     run: '{{ meta.workdir }}'
 vx_grid2grid:
-  leadtimes:
-    start: 0
-    step: 24
-    stop: 72
-  paths:
-    grids:
-      truth: '{{ meta.workdir }}/grids/truth'
   truth:
     name: '{{ app.truth_grid_model }}'
     type: grid
     url: '{{ truth_data.truth_grid_urls[app.truth_grid_model] }}'
   ncdiffs: true
+  regrid:
+    method: NEAREST
+    to: forecast
+  paths:
+    grids:
+      truth: '{{ meta.workdir }}/grids/truth'
 vx_grid2obs:
-  leadtimes:
-    start: 0
-    step: 6
-    stop: 18
   truth:
     name: '{{ app.truth_obs_model }}'
     type: point
@@ -142,6 +186,34 @@ vx_grid2obs:
     to: G104
   paths:
     obs: '{{ meta.workdir }}/obs'
+vx_grid_prcp:
+  truth:
+    name: '{{ app.truth_prcp_model }}'
+    type: grid
+    url: '{{ truth_data.truth_prcp_urls[app.truth_prcp_model] }}'
+  ncdiffs: true
+  regrid:
+    method: NEAREST
+    to: forecast
+  paths:
+    grids:
+      truth: '{{ meta.workdir }}/grids/truth'
+  variables:
+    accum_tp:
+      level_type: surface
+      name: tp
+prewxvx:
+  forecast_path: '{{ nco_vars.COMINeagle }}'
+  lam_index: 64220
+  lcc_info:
+    n_x: 338
+    n_y: 190
+  levels:
+  - 250
+  - 500
+  - 850
+  output_path: '{{ DATA }}/post_prewxvx'
+  model_type: nested-lam
 postwxvx_grid:
   work_path: '{{ DATA }}'
   stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
