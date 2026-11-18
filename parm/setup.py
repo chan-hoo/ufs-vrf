@@ -396,6 +396,7 @@ class ConfigGenerator:
           - common: add metadata.
           - prewxvx: generate frequency, lead time, dates, and variables.
           - postwxvx_grid / postwxvx_obs: transform common and var_common.
+          - postwxvx_prcp: transform common and var_prcp.
         """
         if not isinstance(group_names, list):
             raise ValueError(
@@ -462,16 +463,19 @@ class ConfigGenerator:
         # -------------------------------------------------------------
         # Exclude source groups for tasks that require transformed parameters.
         # -------------------------------------------------------------
-        special_tasks = {
-            "prewxvx",
-            "postwxvx_grid",
-            "postwxvx_obs",
+        variable_groups = {
+            "prewxvx": "var_common",
+            "postwxvx_grid": "var_common",
+            "postwxvx_obs": "var_common",
+            "postwxvx_prcp": "var_prcp",
         }
+        special_tasks = set(variable_groups)
     
         if task_name in special_tasks:
+            source_groups = {"common", variable_groups[task_name]}
             group_names = [
                 group for group in group_names
-                if group not in {"common", "var_common"}
+                if group not in source_groups
             ]
 
         # Merge the remaining task configuration groups.
@@ -501,16 +505,18 @@ class ConfigGenerator:
         # -------------------------------------------------------------
         if task_name in special_tasks:
             common = self.config.get("common", {})
-            var_common = self.config.get("var_common", {})
     
             cycles = common.get("cycles", {})
             leadtimes = deepcopy(common.get("leadtimes", {}))
-            variables = var_common.get("variables", {})
+            variables = self.config.get(
+                variable_groups[task_name], {}
+            ).get("variables", {})
 
             leadtime_groups = {
                 "prewxvx": ("vx_grid2grid", "prewxvx"),
                 "postwxvx_grid": ("vx_grid2grid",),
                 "postwxvx_obs": ("vx_grid2obs",),
+                "postwxvx_prcp": ("vx_grid2prcp",),
             }
             for group_name in leadtime_groups[task_name]:
                 if group_name not in self.config:
@@ -559,8 +565,12 @@ class ConfigGenerator:
                     variables.keys()
                 )
     
-            # postwxvx_grid and postwxvx_obs
-            elif task_name in {"postwxvx_grid", "postwxvx_obs"}:
+            # postwxvx_grid, postwxvx_obs, and postwxvx_prcp
+            elif task_name in {
+                "postwxvx_grid",
+                "postwxvx_obs",
+                "postwxvx_prcp",
+            }:
     
                 # Dates retain the T separator.
                 if start is not None:
