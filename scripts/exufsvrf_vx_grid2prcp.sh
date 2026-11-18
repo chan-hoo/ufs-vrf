@@ -56,7 +56,7 @@ if [[ $err != 0 ]]; then
 fi
 
 # Copy result files/directories to COMOUT
-cp -rp ${DATA}/plots ${COMOUT}/grid_prcp_plots
-cp -rp ${DATA}/stats grid_prcp_stats
-find grid_prcp_stats -type f ! \( -name "*.stat" -o -name "*_pairs.nc" -o -name "*.txt" \) -delete
-cp -rp grid_prcp_stats ${COMOUT}/
+cp -rp ${DATA}/plots ${COMOUT}/grid2prcp_plots
+cp -rp ${DATA}/stats grid2prcp_stats
+find grid2prcp_stats -type f ! \( -name "*.stat" -o -name "*_pairs.nc" -o -name "*.txt" \) -delete
+cp -rp grid2prcp_stats ${COMOUT}/
