@@ -55,6 +55,8 @@ def plot_spatial_stat(
         var = _choose_diff_var(ds)
         da = _mask_fill(_pick_2d(ds[var]))
         vmin, vmax = _finite_min_max(da)
+        vmax = max(abs(vmin), abs(vmax))
+        vmin = -vmax
         units = str(ds[var].attrs.get("units", "")).strip()
 
         lat2d = np.asarray(ds["lat"].values)
