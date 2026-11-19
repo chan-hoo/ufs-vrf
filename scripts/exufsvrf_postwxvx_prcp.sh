@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set -xue
+
+ulimit -s unlimited; ulimit -a;
+
+# Load the shared YAML utility.
+source "${USHufsvrf}/yaml_utils.sh"
+config_common="${exp_case_path}/configs/config_common.yaml"
+
+# Read common configuration values.
+platform=$(read_yaml "${config_common}" "platform")
+
+# Copy input files to temporary working directory.
+mkdir -p ${DATA}/run
+cp -rp ${COMIN}/grid2prcp_stats ${DATA}/run/stats
+
+# Update configuration file with temporary working directory.
+config_fn="config_postwxvx_prcp.yaml"
+config_content=$(<"${exp_case_path}/configs/${config_fn}")
+printf '%s\n' "${config_content//'{{ DATA }}'/${DATA}}" > "${DATA}/${config_fn}"
+
+# Run poostwxvx.
+export pgm="eagle-tools postwxvx"
+
+. prep_step
+time ${pgm} ${config_fn}
+export err=$?; err_chk
+if [[ $err != 0 ]]; then
+  err_exit "eagle-tools: postwxvx_prcp failed"
+fi
+
+# Copy result files/directories to COMOUT
+mkdir -p ${DATA}/postwxvx_prcp
+mv -- *.nc ${DATA}/postwxvx_prcp/
+cp -rp ${DATA}/postwxvx_prcp ${COMOUT}/.
+
+# ---------------------------
+# Plotting
+# ---------------------------
+# Plot result NetCDF files
+ncdir="${DATA}/postwxvx_prcp"
+spatial_stats_root="${DATA}/run/stats"
+basic_outdir="${DATA}/plots_prcp_basic"
+mkdir -p ${basic_outdir}
+spatial_outdir="${DATA}/plots_prcp_spatial_stats"
+mkdir -p ${spatial_outdir}
+
+cat > plot_config.yaml <<EOF
+cartopy_ne_path: '${FIXufsvrf}/data_${platform}/NaturalEarth'
+ncdir: '${ncdir}'
+spatial_stats_root: '${spatial_stats_root}'
+basic_outdir: '${basic_outdir}'
+spatial_outdir: '${spatial_outdir}'
+EOF
+
+python ${USHufsvrf}/plot_wxvx.py plot_config.yaml
+if [ $? -ne 0 ]; then
+  err_exit "postwxvx_prcp plot failed"
+fi
+
+# Copy result files/directories to COMOUT
+cp -rp ${basic_outdir} ${COMOUT}/.
+cp -rp ${spatial_outdir} ${COMOUT}/.

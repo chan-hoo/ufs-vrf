@@ -38,6 +38,10 @@ suite {{ exp_case_name }}
         task jufsvrf_postwxvx_obs
             trigger jufsvrf_vx_grid2obs == complete
 {% endif %}
+{% if "postwxvx_prcp" in task_list %}
+        task jufsvrf_postwxvx_prcp
+            trigger jufsvrf_vx_grid2prcp == complete
+{% endif %}
     endfamily
 endsuite
 
