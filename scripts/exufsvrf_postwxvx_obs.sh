@@ -52,6 +52,10 @@ ncdir: '${ncdir}'
 spatial_stats_root: '${spatial_stats_root}'
 basic_outdir: '${basic_outdir}'
 spatial_outdir: '${spatial_outdir}'
+variables:
+  - 2m_temperature
+  - 10m_zonal_wind
+  - 10m_meridional_wind
 EOF
 
 python ${USHufsvrf}/plot_wxvx.py plot_config.yaml

@@ -296,11 +296,11 @@ def main() -> None:
     spatial_outdir = Path(config["spatial_outdir"])
 
     # Plot configuration.
-    variables = [
-        "2m_temperature",
-        "10m_zonal_wind",
-        "10m_meridional_wind",
-    ]
+    variables = config["variables"]
+    if not isinstance(variables, list) or not all(
+        isinstance(var, str) and var.strip() for var in variables
+    ):
+        raise ValueError("'variables' must be a list of non-empty strings.")
 
     stats = ["ME", "RMSE"]
 
