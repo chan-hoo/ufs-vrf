@@ -54,8 +54,7 @@ def plot_spatial_stat(
     with xr.open_dataset(ncpath) as ds:
         var = _choose_diff_var(ds)
         da = _mask_fill(_pick_2d(ds[var]))
-        vmin, vmax = _finite_min_max(da)
-        vmax = max(abs(vmin), abs(vmax))
+        vmax = _finite_abs_percentile(da)
         vmin = -vmax
         units = str(ds[var].attrs.get("units", "")).strip()
 
@@ -133,6 +132,7 @@ def plot_spatial_stat(
             orientation="horizontal",
             pad=0.12,
             fraction=0.06,
+            extend="both",
         )
         cb.set_label(units or var)
 
@@ -223,14 +223,14 @@ def _choose_diff_var(ds: xr.Dataset) -> str:
     )
 
 
-def _finite_min_max(da: xr.DataArray) -> tuple[float, float]:
+def _finite_abs_percentile(da: xr.DataArray) -> float:
     a = np.asarray(da.values).astype("float64", copy=False)
     a = a[np.isfinite(a)]
 
     if a.size == 0:
         raise ValueError("All values are NaN/inf after masking fill values.")
 
-    return float(a.min()), float(a.max())
+    return float(np.percentile(np.abs(a), 80))
 
 
 def _mask_fill(da: xr.DataArray) -> xr.DataArray:
