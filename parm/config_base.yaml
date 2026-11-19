@@ -240,4 +240,4 @@ postwxvx_obs:
   stat_prefix: 'point_stat_{{ app.exp_case_name }}'
 postwxvx_prcp:
   work_path: '{{ DATA }}'
-  stat_prefix: 'prcp_stat_{{ app.exp_case_name }}'
+  stat_prefix: 'grid_stat_{{ app.exp_case_name }}'
