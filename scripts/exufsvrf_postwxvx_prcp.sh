@@ -53,7 +53,7 @@ spatial_stats_root: '${spatial_stats_root}'
 basic_outdir: '${basic_outdir}'
 spatial_outdir: '${spatial_outdir}'
 variables:
-  - tp_surface
+  tp_surface: [CSI]
 EOF
 
 python ${USHufsvrf}/plot_wxvx.py plot_config.yaml

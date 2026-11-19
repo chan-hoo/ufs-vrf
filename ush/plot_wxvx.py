@@ -147,15 +147,14 @@ def plot_spatial_stat(
 def plot_basic_all(
     ncdir: Path,
     outdir: Path,
-    variables: list[str],
-    stats: list[str],
+    variables: dict[str, list[str]],
 ) -> None:
     """
     Generate basic plots for all requested variables and statistics.
 
     Assumes each variable has a corresponding <variable>.nc file.
     """
-    for var in variables:
+    for var, stats in variables.items():
         ncpath = ncdir / f"{var}.nc"
 
         if not ncpath.is_file():
@@ -297,12 +296,17 @@ def main() -> None:
 
     # Plot configuration.
     variables = config["variables"]
-    if not isinstance(variables, list) or not all(
-        isinstance(var, str) and var.strip() for var in variables
+    if not isinstance(variables, dict) or not all(
+        isinstance(var, str)
+        and var.strip()
+        and isinstance(stats, list)
+        and all(isinstance(stat, str) and stat.strip() for stat in stats)
+        for var, stats in variables.items()
     ):
-        raise ValueError("'variables' must be a list of non-empty strings.")
-
-    stats = ["ME", "RMSE"]
+        raise ValueError(
+            "'variables' must map non-empty variable names to lists of "
+            "non-empty statistic names."
+        )
 
     spatial_cfg = {
         "figsize": {"w": 12, "h": 7},
@@ -318,7 +322,6 @@ def main() -> None:
         ncdir=ncdir,
         outdir=basic_outdir,
         variables=variables,
-        stats=stats,
     )
 
     plot_spatial_stat_all(
