@@ -230,7 +230,7 @@ def _finite_abs_percentile(da: xr.DataArray) -> float:
     if a.size == 0:
         raise ValueError("All values are NaN/inf after masking fill values.")
 
-    return float(np.percentile(np.abs(a), 80))
+    return float(np.percentile(np.abs(a), 90))
 
 
 def _mask_fill(da: xr.DataArray) -> xr.DataArray:
