@@ -561,9 +561,13 @@ class ConfigGenerator:
                     task_config["end_date"] = format_datetime(stop)
     
                 # Preserve the order of variables in var_common.
-                task_config["vars_of_interest"] = list(
-                    variables.keys()
-                )
+                vars_of_interest = list(variables)
+                if "vx_grid2prcp" in self.validate_task_list():
+                    vars_of_interest.extend(
+                        self.config.get("var_prcp", {})
+                        .get("variables", {})
+                    )
+                task_config["vars_of_interest"] = vars_of_interest
     
             # postwxvx_grid, postwxvx_obs, and postwxvx_prcp
             elif task_name in {
