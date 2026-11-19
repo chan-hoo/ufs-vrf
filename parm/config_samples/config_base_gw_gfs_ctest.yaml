@@ -112,7 +112,7 @@ var_common:
 vx_common:
   forecast:
     name: '{{ app.exp_case_name }}'
-    path: '{{ meta.gw_forecast }}/{{ yyyymmdd }}/{{ hh }}/gfs.t{{ hh }}z.master.f{{ "%03d" % fh }}.grib2'
+    path: '{{ meta.gw_forecast }}/gfs.{{ yyyymmdd }}/{{ hh }}/model/gfs.t{{ hh }}z.master.f{{ "%03d" % fh }}.grib2'
   meta:
     gw_forecast: '{{ nco_vars.COMINglobal_workflow }}'
     workdir: '{{ DATA }}'

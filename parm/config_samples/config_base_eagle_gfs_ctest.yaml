@@ -174,7 +174,7 @@ vx_grid2obs:
   paths:
     obs: '{{ meta.workdir }}/obs'
 prewxvx:
-  forecast_path: '{{ nco_vars.COMINeagle }}'
+  forecast_path: '{{ nco_vars.COMINeagle }}/{{ yyyymmdd[:4] }}/{{ yyyymmdd[4:6] }}/{{ yyyymmdd[6:8] }}/{{ hh }}/inference/output'
   lam_index: 64220
   lcc_info:
     n_x: 338
