@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 --suspend | --resume | --kill | --halt | --restart"
+  echo "Usage: $0 --suspend | --resume | --kill | --halt | --restart | --status | --requeue | --show | --free"
   exit 1
 fi
 ACTION="$1"
@@ -41,6 +41,23 @@ elif [ "${ACTION}" = "--restart" ]; then
   # Start job scheduling, communication with jobs, and respond to all requests.
   echo "Restart server ..."
   ecflow_client --port="${ECF_PORT}" --host="${ECF_HOST}" --restart
+########## Status and information ##########
+elif [ "${ACTION}" = "--status" ]; then
+  # Check the status of the suite and display its state tree
+  echo "Status of suite ${ECF_SUITE} ..."
+  ecflow_client --port="${ECF_PORT}" --host="${ECF_HOST}" --get_state "/${ECF_SUITE}"
+elif [ "${ACTION}" = "--show" ]; then
+  # Display the full definition tree of the suite
+  echo "Show suite definition ${ECF_SUITE} ..."
+  ecflow_client --port="${ECF_PORT}" --host="${ECF_HOST}" --get "/${ECF_SUITE}"
+elif [ "${ACTION}" = "--requeue" ]; then
+  # Requeue the suite/node. This will clear task completion status and re-enable jobs
+  echo "Requeue suite ${ECF_SUITE} ..."
+  ecflow_client --port="${ECF_PORT}" --host="${ECF_HOST}" --requeue "/${ECF_SUITE}"
+elif [ "${ACTION}" = "--free" ]; then
+  # Reset node status when task is NOT running (e.g., after external task failure)
+  echo "Free (reset) suite ${ECF_SUITE} ..."
+  ecflow_client --port="${ECF_PORT}" --host="${ECF_HOST}" --free "/${ECF_SUITE}"
 else
   echo "FATAL ERROR: ${ACTION} is NOT supported in this script. Please check --help"
   ecflow_client --help=summary
