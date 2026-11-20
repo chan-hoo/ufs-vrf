@@ -161,7 +161,7 @@ sync_mdt() {
         source "$INSTALLDIR/etc/profile.d/conda.sh"
         conda activate "$MDT_ENV"
         cd "$INSTALL_ROOT/mdt"
-        uv sync --active --frozen --extra prefect --extra dask --inexact
+        UV_PROJECT_ENVIRONMENT="$MDT_ENV" uv sync --no-active --frozen --extra prefect --extra dask --inexact
     )
 }
 
@@ -194,10 +194,12 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
 
     if [[ -x "$ENV_PREFIX/bin/python" ]]; then
         echo "Found existing environment: $ENV_PREFIX"
-        echo "Skipping environment creation and verification."
         if [[ "$ENV_NAME" == "mdt" ]]; then
+            echo "Synchronizing and verifying MDT."
             sync_mdt
             conda run --prefix "$ENV_PREFIX" mdt --version
+        else
+            echo "Skipping environment creation and verification."
         fi
         continue
     fi
@@ -241,7 +243,9 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
         conda run --prefix "$ENV_PREFIX" mdt --version
     fi
 
-    conda run --prefix "$ENV_PREFIX" uw --version
+    if [[ "$ENV_NAME" != "mdt" ]]; then
+        conda run --prefix "$ENV_PREFIX" uw --version
+    fi
 
     echo
     echo "Installed packages in $ENV_NAME:"

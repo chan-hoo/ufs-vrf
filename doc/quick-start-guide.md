@@ -64,7 +64,8 @@ mdt --help
 
 MDT is installed from the pinned `sorc/mdt` submodule using its committed
 `uv.lock`. Its environment is separate from the existing wxvx and plotting
-environments.
+environments. If an earlier MDT installation failed, rerun
+`./build_ufsvrf.sh mdt` from `sorc` to synchronize the existing environment.
 
 ## 3. Configuration
 
