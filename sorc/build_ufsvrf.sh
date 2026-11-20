@@ -15,6 +15,7 @@ export XDG_CACHE_HOME="$INSTALLDIR/cache"
 
 WXVX_ENV="$CONDA_ENVS_PATH/wxvx"
 PLOT_ENV="$CONDA_ENVS_PATH/plot"
+MDT_ENV="$CONDA_ENVS_PATH/mdt"
 
 echo "Installation root: $INSTALL_ROOT"
 echo "Miniforge:         $INSTALLDIR"
@@ -32,20 +33,30 @@ case "${1:-all}" in
     plot)
         ENVIRONMENTS=("plot")
         ;;
+    mdt)
+        ENVIRONMENTS=("mdt")
+        ;;
     all)
-        ENVIRONMENTS=("wxvx" "plot")
+        ENVIRONMENTS=("wxvx" "plot" "mdt")
         ;;
     *)
         echo "Error: Invalid environment: $1" >&2
-        echo "Usage: $0 [wxvx|plot]" >&2
-        echo "  No argument: Build both environments" >&2
+        echo "Usage: $0 [wxvx|plot|mdt]" >&2
+        echo "  No argument: Build all environments" >&2
         exit 1
         ;;
 esac
 
 if (( $# > 1 )); then
     echo "Error: Too many arguments." >&2
-    echo "Usage: $0 [wxvx|plot]" >&2
+    echo "Usage: $0 [wxvx|plot|mdt]" >&2
+    exit 1
+fi
+
+if [[ " ${ENVIRONMENTS[*]} " == *" mdt "* ]] &&
+    [[ ! -f "$INSTALL_ROOT/mdt/pyproject.toml" || ! -f "$INSTALL_ROOT/mdt/uv.lock" ]]; then
+    echo "Error: MDT submodule is not initialized in $INSTALL_ROOT/mdt." >&2
+    echo "Run 'git submodule update --init --recursive' and try again." >&2
     exit 1
 fi
 
@@ -145,6 +156,15 @@ echo
 echo "Effective Conda configuration:"
 conda info
 
+sync_mdt() {
+    (
+        source "$INSTALLDIR/etc/profile.d/conda.sh"
+        conda activate "$MDT_ENV"
+        cd "$INSTALL_ROOT/mdt"
+        uv sync --active --frozen --extra prefect --extra dask --inexact
+    )
+}
+
 # ==============================================================
 # Build selected Python environments
 # ==============================================================
@@ -175,6 +195,10 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
     if [[ -x "$ENV_PREFIX/bin/python" ]]; then
         echo "Found existing environment: $ENV_PREFIX"
         echo "Skipping environment creation and verification."
+        if [[ "$ENV_NAME" == "mdt" ]]; then
+            sync_mdt
+            conda run --prefix "$ENV_PREFIX" mdt --version
+        fi
         continue
     fi
 
@@ -195,6 +219,10 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
         --prefix "$ENV_PREFIX" \
         --file "$ENV_FILE"
 
+    if [[ "$ENV_NAME" == "mdt" ]]; then
+        sync_mdt
+    fi
+
     # ----------------------------------------------------------
     # Verify installation
     # ----------------------------------------------------------
@@ -207,6 +235,10 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
 
     if [[ "$ENV_NAME" == "wxvx" ]]; then
         conda run --prefix "$ENV_PREFIX" wxvx --version
+    fi
+
+    if [[ "$ENV_NAME" == "mdt" ]]; then
+        conda run --prefix "$ENV_PREFIX" mdt --version
     fi
 
     conda run --prefix "$ENV_PREFIX" uw --version
@@ -274,8 +306,34 @@ conda activate "\$_PLOT_ENV"
 conda list | grep -E 'cartopy|matplotlib|numpy|pandas|uwtools|eagle-tools'
 EOF
 
+cat > "$INSTALL_ROOT/activate_mdt.sh" <<EOF
+#!/usr/bin/env bash
+
+# Activate the locally installed MDT environment.
+# Source this script; do not execute it.
+
+_CONDA_ROOT="$INSTALLDIR"
+_MDT_ENV="\$_CONDA_ROOT/envs/mdt"
+
+if [[ ! -f "\$_CONDA_ROOT/etc/profile.d/conda.sh" ]]; then
+    echo "Error: Local Miniforge installation not found: \$_CONDA_ROOT" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+if [[ ! -d "\$_MDT_ENV" ]]; then
+    echo "Error: MDT environment not found: \$_MDT_ENV" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+source "\$_CONDA_ROOT/etc/profile.d/conda.sh"
+conda activate "\$_MDT_ENV"
+
+mdt --version
+EOF
+
 chmod +x "$INSTALL_ROOT/activate_wxvx.sh"
 chmod +x "$INSTALL_ROOT/activate_plot.sh"
+chmod +x "$INSTALL_ROOT/activate_mdt.sh"
 
 echo
 echo "=============================================================="
@@ -285,9 +343,11 @@ echo "=============================================================="
 echo "Miniforge:          $INSTALLDIR"
 echo "wxvx environment:   $WXVX_ENV"
 echo "plot environment:   $PLOT_ENV"
+echo "MDT environment:    $MDT_ENV"
 echo "Package cache:      $CONDA_PKGS_DIRS"
 echo "Conda config:       $CONDARC"
 echo
 echo "Activation scripts:"
 echo "  source ./activate_wxvx.sh"
 echo "  source ./activate_plot.sh"
+echo "  source ./activate_mdt.sh"

@@ -12,12 +12,17 @@ Choose one of the following methods to clone the repository.
 
 - SSH (if you have configured an SSH key for GitHub):
 ```bash
-git clone git@github.com:chan-hoo/ufs-vrf.git
+git clone --recurse-submodules git@github.com:chan-hoo/ufs-vrf.git
 ```
 
 - HTTPS:
 ```bash
-git clone https://github.com/chan-hoo/ufs-vrf.git
+git clone --recurse-submodules https://github.com/chan-hoo/ufs-vrf.git
+```
+
+If you already cloned the repository without submodules, initialize MDT with:
+```bash
+git submodule update --init --recursive
 ```
 
 ### Step 2. Run the installation script
@@ -26,6 +31,9 @@ git clone https://github.com/chan-hoo/ufs-vrf.git
 cd ufs-vrf/sorc
 ./build_ufsvrf.sh
 ```
+
+By default, the script builds the `wxvx`, `plot`, and `mdt` environments. To
+build only one environment, pass `wxvx`, `plot`, or `mdt` as an argument.
 
 ## 2. Activate the wxvx Environment
 
@@ -42,6 +50,18 @@ If the environment is active and Conda is initialized in your current shell:
 ```bash
 conda deactivate
 ```
+
+### Activate the MDT Environment
+
+```bash
+cd ufs-vrf/sorc
+source activate_mdt.sh
+mdt --help
+```
+
+MDT is installed from the pinned `sorc/mdt` submodule using its committed
+`uv.lock`. Its environment is separate from the existing wxvx and plotting
+environments.
 
 ## 3. Configuration
 

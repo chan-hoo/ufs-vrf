@@ -1,0 +1,4 @@
+[submodule "sorc/mdt"]
+	path = sorc/mdt
+	url = https://github.com/NOAA-EMC/mdt.git
+	ignore = dirty
