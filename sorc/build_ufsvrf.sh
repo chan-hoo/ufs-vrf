@@ -246,7 +246,7 @@ fi
 source "\$_CONDA_ROOT/etc/profile.d/conda.sh"
 conda activate "\$_WXVX_ENV"
 
-conda list | grep -E 'wxvx|met2go|uwtools|eagle-tools'
+conda list | grep -E 'wxvx|metplus|uwtools|eagle-tools'
 EOF
 
 cat > "$INSTALL_ROOT/activate_plot.sh" <<EOF
