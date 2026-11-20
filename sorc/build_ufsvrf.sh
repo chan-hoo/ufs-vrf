@@ -53,6 +53,13 @@ if (( $# > 1 )); then
     exit 1
 fi
 
+if [[ " ${ENVIRONMENTS[*]} " == *" wxvx "* ]] &&
+    [[ ! -f "$INSTALL_ROOT/wxvx/recipe/meta.yaml" || ! -f "$INSTALL_ROOT/wxvx/src/wxvx/resources/info.json" ]]; then
+    echo "Error: wxvx submodule is not initialized in $INSTALL_ROOT/wxvx." >&2
+    echo "Run 'git submodule update --init --recursive' and try again." >&2
+    exit 1
+fi
+
 if [[ " ${ENVIRONMENTS[*]} " == *" mdt "* ]] &&
     [[ ! -f "$INSTALL_ROOT/mdt/pyproject.toml" || ! -f "$INSTALL_ROOT/mdt/uv.lock" ]]; then
     echo "Error: MDT submodule is not initialized in $INSTALL_ROOT/mdt." >&2
@@ -165,6 +172,33 @@ sync_mdt() {
     )
 }
 
+sync_wxvx() {
+    local channel="$INSTALLDIR/wxvx-channel"
+    local spec
+
+    if [[ ! -x "$INSTALLDIR/bin/conda-build" ]]; then
+        conda install --yes --prefix "$INSTALLDIR" --override-channels -c conda-forge conda-build
+    fi
+
+    mkdir -p "$channel"
+    conda build "$INSTALL_ROOT/wxvx/recipe" \
+        --no-test --no-anaconda-upload --output-folder "$channel" \
+        --override-channels -c conda-forge -c ufs-community
+    conda index "$channel"
+
+    spec=$("$INSTALLDIR/bin/python" -c '
+import json
+import sys
+with open(sys.argv[1]) as f:
+    info = json.load(f)
+print("wxvx={}=py_{}".format(info["version"], info["buildnum"]))
+' "$INSTALL_ROOT/wxvx/src/wxvx/resources/info.json")
+    conda install --yes --prefix "$WXVX_ENV" --force-reinstall \
+        --override-channels -c "$channel" -c conda-forge -c ufs-community -c oar-gsl \
+        "file://$channel::$spec"
+    conda run --prefix "$WXVX_ENV" wxvx --version
+}
+
 # ==============================================================
 # Build selected Python environments
 # ==============================================================
@@ -194,7 +228,10 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
 
     if [[ -x "$ENV_PREFIX/bin/python" ]]; then
         echo "Found existing environment: $ENV_PREFIX"
-        if [[ "$ENV_NAME" == "mdt" ]]; then
+        if [[ "$ENV_NAME" == "wxvx" ]]; then
+            echo "Building and installing wxvx from the submodule."
+            sync_wxvx
+        elif [[ "$ENV_NAME" == "mdt" ]]; then
             echo "Synchronizing and verifying MDT."
             sync_mdt
             conda run --prefix "$ENV_PREFIX" mdt --version
@@ -221,7 +258,9 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
         --prefix "$ENV_PREFIX" \
         --file "$ENV_FILE"
 
-    if [[ "$ENV_NAME" == "mdt" ]]; then
+    if [[ "$ENV_NAME" == "wxvx" ]]; then
+        sync_wxvx
+    elif [[ "$ENV_NAME" == "mdt" ]]; then
         sync_mdt
     fi
 
@@ -234,10 +273,6 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
 
     conda run --prefix "$ENV_PREFIX" python --version
     conda run --prefix "$ENV_PREFIX" python -m pip --version
-
-    if [[ "$ENV_NAME" == "wxvx" ]]; then
-        conda run --prefix "$ENV_PREFIX" wxvx --version
-    fi
 
     if [[ "$ENV_NAME" == "mdt" ]]; then
         conda run --prefix "$ENV_PREFIX" mdt --version

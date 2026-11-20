@@ -2,3 +2,7 @@
 	path = sorc/mdt
 	url = https://github.com/NOAA-EMC/mdt.git
 	ignore = dirty
+[submodule "sorc/wxvx"]
+	path = sorc/wxvx
+	url = https://github.com/NOAA-GSL/wxvx.git
+	ignore = dirty

@@ -20,7 +20,7 @@ git clone --recurse-submodules git@github.com:chan-hoo/ufs-vrf.git
 git clone --recurse-submodules https://github.com/chan-hoo/ufs-vrf.git
 ```
 
-If you already cloned the repository without submodules, initialize MDT with:
+If you already cloned the repository without submodules, initialize them with:
 ```bash
 git submodule update --init --recursive
 ```
@@ -34,6 +34,11 @@ cd ufs-vrf/sorc
 
 By default, the script builds the `wxvx`, `plot`, and `mdt` environments. To
 build only one environment, pass `wxvx`, `plot`, or `mdt` as an argument.
+
+wxvx is built from the pinned `sorc/wxvx` submodule using its Conda recipe.
+Rerun `./build_ufsvrf.sh wxvx` after updating the submodule to rebuild and
+install it into the wxvx environment. The build installs `conda-build` into
+the local Miniforge installation and requires access to the Conda channels.
 
 MDT is installed from the pinned `sorc/mdt` submodule using its committed
 `uv.lock`. Its environment is separate from the existing wxvx and plotting
