@@ -35,6 +35,11 @@ cd ufs-vrf/sorc
 By default, the script builds the `wxvx`, `plot`, and `mdt` environments. To
 build only one environment, pass `wxvx`, `plot`, or `mdt` as an argument.
 
+MDT is installed from the pinned `sorc/mdt` submodule using its committed
+`uv.lock`. Its environment is separate from the existing wxvx and plotting
+environments. If an earlier MDT installation failed, rerun
+`./build_ufsvrf.sh mdt` from `sorc` to synchronize the existing environment.
+
 ## 2. Activate the wxvx Environment
 
 After installation, activate the environment by sourcing the activation script:
@@ -42,27 +47,6 @@ After installation, activate the environment by sourcing the activation script:
 ```bash
 source activate_wxvx.sh
 ```
-
-### Deactivate the Environment
-
-If the environment is active and Conda is initialized in your current shell:
-
-```bash
-conda deactivate
-```
-
-### Activate the MDT Environment
-
-```bash
-cd ufs-vrf/sorc
-source activate_mdt.sh
-mdt --help
-```
-
-MDT is installed from the pinned `sorc/mdt` submodule using its committed
-`uv.lock`. Its environment is separate from the existing wxvx and plotting
-environments. If an earlier MDT installation failed, rerun
-`./build_ufsvrf.sh mdt` from `sorc` to synchronize the existing environment.
 
 ## 3. Configuration
 
@@ -91,6 +75,7 @@ vim config.yaml
   - `run_type`: ctest
   - `truth_grid_model`: GFS, HRRR
   - `truth_obs_model`: PREPBUFR
+  - `truth_prcp_model`: STAGEIV
   - `workflow_manager`: ecflow, None
   - `workflow_type`: eagle, hrrrcast, global_workflow
 
