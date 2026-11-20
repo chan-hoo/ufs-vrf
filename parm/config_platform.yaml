@@ -16,7 +16,7 @@ platforms:
     native: null
     native_data: null
     partition_queue: main
-    partition_queue_data: null
+    partition_queue_data: main
     qos: null
     qos_data: null
     run_cmd: aprun
