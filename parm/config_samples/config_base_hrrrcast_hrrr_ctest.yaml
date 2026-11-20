@@ -28,7 +28,7 @@ tasks:
       - var_common
       - vx_grid2grid
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:25:00"
     external_data: true
@@ -38,7 +38,7 @@ tasks:
       - var_common
       - postwxvx_grid
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "01:00:00"
     external_data: false

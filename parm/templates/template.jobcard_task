@@ -5,6 +5,7 @@
 #SBATCH --output={{ output_name }}
   {%- if external_data %}
 #SBATCH --partition={{ partition_queue_data }}
+#SBATCH --ntasks=1
     {%- if platform == "gaea-c6" %}
 #SBATCH --constraint={{ constraint_data }}
 #SBATCH --cluster={{ cluster_data }}
@@ -18,6 +19,8 @@
   {%- else %}
 #SBATCH --partition={{ partition_queue }}
 #SBATCH --qos={{ qos }}
+#SBATCH --nodes={{ nnodes }}
+#SBATCH --ntasks-per-node={{ nprocs_per_node }}
     {%- if platform == "gaea-c6" %}
 #SBATCH --cluster={{ cluster }}
     {%- endif %}
@@ -26,9 +29,7 @@
     {%- endif %}
   {%- endif %}
 #SBATCH --time={{ walltime }}
-#SBATCH --nodes={{ nnodes }}
-#SBATCH --ntasks-per-node={{ nprocs_per_node }}
-  {%- if platform not in ["gaea-c6", "orion"] %}
+  {%- if platform not in ["gaea-c6", "orion"] and memory_per_node is not none %}
 #SBATCH --mem={{ memory_per_node }}
   {%- endif %}
 {%- elif sched == "pbspro" %}

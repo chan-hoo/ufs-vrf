@@ -34,7 +34,7 @@ tasks:
       - common
       - prewxvx
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:10:00"
     external_data: false
@@ -45,7 +45,7 @@ tasks:
       - vx_common
       - vx_grid2grid
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:10:00"
     external_data: true
@@ -56,7 +56,7 @@ tasks:
       - vx_common
       - vx_grid2obs
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:15:00"
     external_data: true
@@ -66,7 +66,7 @@ tasks:
       - var_common
       - postwxvx_grid
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:05:00"
     external_data: false
@@ -76,7 +76,7 @@ tasks:
       - var_common
       - postwxvx_obs
     hpc:
-      memory_per_node: 128G
+      memory_per_node: null
       nprocs: 1
       walltime: "00:05:00"
     external_data: false
