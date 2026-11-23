@@ -60,6 +60,13 @@ if [[ " ${ENVIRONMENTS[*]} " == *" wxvx "* ]] &&
     exit 1
 fi
 
+if [[ " ${ENVIRONMENTS[*]} " == *" wxvx "* || " ${ENVIRONMENTS[*]} " == *" plot "* ]] &&
+    [[ ! -f "$INSTALL_ROOT/eagle-tools/pyproject.toml" ]]; then
+    echo "Error: eagle-tools submodule is not initialized in $INSTALL_ROOT/eagle-tools." >&2
+    echo "Run 'git submodule update --init --recursive' and try again." >&2
+    exit 1
+fi
+
 if [[ " ${ENVIRONMENTS[*]} " == *" mdt "* ]] &&
     [[ ! -f "$INSTALL_ROOT/mdt/pyproject.toml" || ! -f "$INSTALL_ROOT/mdt/uv.lock" ]]; then
     echo "Error: MDT submodule is not initialized in $INSTALL_ROOT/mdt." >&2
@@ -199,6 +206,17 @@ print("wxvx={}=py_{}".format(info["version"], info["buildnum"]))
     conda run --prefix "$WXVX_ENV" wxvx --version
 }
 
+sync_eagle_tools() {
+    local env_prefix="$1"
+    local source="$INSTALL_ROOT/eagle-tools"
+
+    # Resolve dependencies first, then refresh only the source package even if
+    # its version is unchanged, without forcing a reinstall of its dependencies.
+    conda run --prefix "$env_prefix" python -m pip install "$source"
+    conda run --prefix "$env_prefix" python -m pip install --no-deps --force-reinstall "$source"
+    conda run --prefix "$env_prefix" eagle-tools --help
+}
+
 # ==============================================================
 # Build selected Python environments
 # ==============================================================
@@ -235,8 +253,10 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
             echo "Synchronizing and verifying MDT."
             sync_mdt
             conda run --prefix "$ENV_PREFIX" mdt --version
-        else
-            echo "Skipping environment creation and verification."
+        fi
+        if [[ "$ENV_NAME" != "mdt" ]]; then
+            echo "Installing eagle-tools from the submodule."
+            sync_eagle_tools "$ENV_PREFIX"
         fi
         continue
     fi
@@ -262,6 +282,9 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
         sync_wxvx
     elif [[ "$ENV_NAME" == "mdt" ]]; then
         sync_mdt
+    fi
+    if [[ "$ENV_NAME" != "mdt" ]]; then
+        sync_eagle_tools "$ENV_PREFIX"
     fi
 
     # ----------------------------------------------------------

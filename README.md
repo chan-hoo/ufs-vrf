@@ -40,6 +40,10 @@ Rerun `./build_ufsvrf.sh wxvx` after updating the submodule to rebuild and
 install it into the wxvx environment. The build installs `conda-build` into
 the local Miniforge installation and requires access to the Conda channels.
 
+eagle-tools is installed with pip from the pinned `sorc/eagle-tools` submodule
+into both the wxvx and plot environments. Rerun `./build_ufsvrf.sh wxvx` and
+`./build_ufsvrf.sh plot` after updating it to refresh both installations.
+
 MDT is installed from the pinned `sorc/mdt` submodule using its committed
 `uv.lock`. Its environment is separate from the existing wxvx and plotting
 environments. If an earlier MDT installation failed, rerun

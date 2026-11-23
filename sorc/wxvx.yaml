@@ -12,5 +12,3 @@ dependencies:
   - numpy 2.2.*
   - xesmf 0.8.*
   - zarr 2.18.*
-  - pip:
-      - eagle-tools==0.9.*

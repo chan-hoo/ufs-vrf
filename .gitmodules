@@ -6,3 +6,7 @@
 	path = sorc/wxvx
 	url = https://github.com/NOAA-GSL/wxvx.git
 	ignore = dirty
+[submodule "sorc/eagle-tools"]
+	path = sorc/eagle-tools
+	url = https://github.com/NOAA-PSL/eagle-tools.git
+	ignore = dirty

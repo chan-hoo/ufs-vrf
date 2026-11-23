@@ -11,22 +11,22 @@ log="$test_dir/conda.log"
 
 cleanup() {
     rm -f "$bin/uname" "$root/wxvx/recipe/meta.yaml" \
-        "$root/wxvx/src/wxvx/resources/info.json" "$root/wxvx.yaml" \
+        "$root/wxvx/src/wxvx/resources/info.json" "$root/eagle-tools/pyproject.toml" "$root/wxvx.yaml" \
         "$root/condarc" "$root/activate_wxvx.sh" "$root/activate_plot.sh" \
         "$root/activate_mdt.sh" "$root/conda/bin/conda" "$root/conda/bin/conda-build" \
         "$root/conda/bin/python" "$root/conda/etc/profile.d/conda.sh" \
-        "$env_dir/bin/python" "$env_dir/bin/wxvx" "$env_dir/bin/uw" "$log" "$test_dir/error"
+        "$env_dir/bin/python" "$env_dir/bin/wxvx" "$env_dir/bin/uw" "$env_dir/bin/eagle-tools" "$log" "$test_dir/error"
     rmdir "$env_dir/bin" "$env_dir" "$root/conda/envs" "$root/conda/pkgs" \
         "$root/conda/cache" "$root/conda/wxvx-channel" "$root/conda/etc/profile.d" \
         "$root/conda/etc" "$root/conda/bin" "$root/conda" \
         "$root/wxvx/recipe" "$root/wxvx/src/wxvx/resources" "$root/wxvx/src/wxvx" \
-        "$root/wxvx/src" "$root/wxvx" "$root" "$bin" "$test_dir" 2>/dev/null || true
+        "$root/wxvx/src" "$root/wxvx" "$root/eagle-tools" "$root" "$bin" "$test_dir" 2>/dev/null || true
 }
 trap cleanup EXIT
 
 mkdir -p "$bin" "$root/wxvx/recipe" "$root/wxvx/src/wxvx/resources" \
-    "$root/conda/bin" "$root/conda/etc/profile.d" "$env_dir/bin"
-touch "$root/wxvx/recipe/meta.yaml" "$root/wxvx.yaml" "$root/conda/bin/conda"
+    "$root/eagle-tools" "$root/conda/bin" "$root/conda/etc/profile.d" "$env_dir/bin"
+touch "$root/wxvx/recipe/meta.yaml" "$root/eagle-tools/pyproject.toml" "$root/wxvx.yaml" "$root/conda/bin/conda"
 printf '{"version":"0.8.1","buildnum":"0"}\n' > "$root/wxvx/src/wxvx/resources/info.json"
 printf '#!/usr/bin/env bash\nexec python3 "$@"\n' > "$root/conda/bin/python"
 printf '#!/usr/bin/env bash\necho "python test"\n' > "$env_dir/bin/python"
@@ -70,6 +70,10 @@ conda() {
             [[ "$2" == --prefix && "$3" == "$EXPECTED_WXVX_ENV" ]]
             local prefix="$3"
             shift 3
+            if [[ "$*" == "python -m pip install $TEST_ROOT/eagle-tools" ]]; then
+                printf '#!/usr/bin/env bash\necho "eagle-tools test"\n' > "$prefix/bin/eagle-tools"
+                chmod +x "$prefix/bin/eagle-tools"
+            fi
             "$prefix/bin/$1" "${@:2}"
             ;;
         *) echo "Unexpected conda command: $*" >&2; return 1 ;;
@@ -83,15 +87,17 @@ cd "$root"
 # An existing environment must be updated, not skipped.
 bash "$repo_root/sorc/build_ufsvrf.sh" wxvx
 grep -Fq "file://$root/conda/wxvx-channel::wxvx=0.8.1=py_0" "$log"
+grep -Fq "run --prefix $env_dir python -m pip install --no-deps --force-reinstall $root/eagle-tools" "$log"
 [[ -x "$env_dir/bin/wxvx" ]]
 
 # A new environment also receives the locally built package.
-rm "$env_dir/bin/python" "$env_dir/bin/wxvx"
+rm "$env_dir/bin/python" "$env_dir/bin/wxvx" "$env_dir/bin/eagle-tools"
 rmdir "$env_dir/bin" "$env_dir"
 : > "$log"
 bash "$repo_root/sorc/build_ufsvrf.sh" wxvx
 grep -Fq "env create --prefix $env_dir" "$log"
 grep -Fq "file://$root/conda/wxvx-channel::wxvx=0.8.1=py_0" "$log"
+grep -Fq "run --prefix $env_dir python -m pip install $root/eagle-tools" "$log"
 
 # Build failures must not proceed to installation.
 : > "$log"
