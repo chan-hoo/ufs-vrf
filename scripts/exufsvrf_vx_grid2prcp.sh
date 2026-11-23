@@ -21,7 +21,7 @@ if [[ "${run_type}" == "ctest" ]]; then
   # Truth data
   if [[ "${external_data}" == "false" ]]; then
     mkdir -p ${DATA}/grids
-    cp -rp "${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/truth_grids/${truth_grid_model}/truth" ${DATA}/grids/.
+    cp -rp "${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/truth_prcp/${truth_prcp_model}/grids/truth" ${DATA}/grids/.
   fi
 fi
 
