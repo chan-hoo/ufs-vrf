@@ -27,6 +27,9 @@ task_list:
   - postwxvx_grid
   - postwxvx_obs
   - postwxvx_prcp
+  - mdt_tmp
+  - mdt_wind
+  - mdt_aod
 # Shared leadtimes belong in common. For different verification windows,
 # vx_grid2grid.leadtimes drives prewxvx and postwxvx_grid, while
 # vx_grid2obs.leadtimes drives postwxvx_obs. prewxvx.leadtimes can override
@@ -103,6 +106,66 @@ tasks:
       memory_per_node: null
       nprocs: 1
       walltime: "00:05:00"
+    external_data: false
+  mdt_tmp:
+    groups:
+      - data
+        - gfs_model
+        - igra2_obs
+      - pairing
+        - pair_gfs_igra
+      - reductions
+        - gfs_igra_profile_average
+      - statistics
+        - profile_stats
+      - plots
+        - vertical_profile_comparison
+    hpc:
+      memory_per_node: null
+      nprocs: 1
+      walltime: "00:30:00"
+    external_data: false
+  mdt_wind:
+    groups:
+      - data
+        - gfs_model
+        - ish_lite_obs
+      - pairing
+        - pair_gfs_ish
+      - statistics
+        - wind_stats
+      - plots
+        - timeseries_rmse
+        - scatter_wind
+        - spatial_bias
+        - conditional_quantile_temp
+    hpc:
+      memory_per_node: null
+      nprocs: 1
+      walltime: "00:30:00"
+    external_data: false
+  mdt_aod:
+    groups:
+      - data
+        - gefs_model
+        - icap_mme_model
+        - aeronet_obs
+      - pairing
+        - pair_gefs_obs
+        - pair_icap_obs
+        - pair_gefs_icap
+      - combine
+        - obs_comparison
+      - statistics
+        - obs_stats
+        - model_bias_stats
+      - plots
+        - obs_spatial_map
+        - model_bias_map
+    hpc:
+      memory_per_node: null
+      nprocs: 1
+      walltime: "00:30:00"
     external_data: false
 common:
   cycles:
