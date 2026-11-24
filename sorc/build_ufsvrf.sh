@@ -27,18 +27,16 @@ echo "Environment path:  $CONDA_ENVS_PATH"
 # ==============================================================
 
 usage() {
-    echo "Usage: $0 [wxvx|plot|mdt|all] [--rebuild]" >&2
-    echo "  No argument: Build all environments, prompting before replacing existing ones" >&2
+    echo "Usage: $0 [wxvx|plot|mdt|all] [--rebuild|--refresh]" >&2
+    echo "  Prompt before replacing existing selected environments" >&2
     echo "  --rebuild: Remove and recreate selected environments without prompting" >&2
+    echo "  --refresh: Update source packages without recreating existing environments" >&2
 }
 
 SELECTION="all"
 REBUILD=false
+REFRESH=false
 SELECTION_SET=false
-PROMPT_EXISTING=false
-if (( $# == 0 )); then
-    PROMPT_EXISTING=true
-fi
 
 for arg in "$@"; do
     case "$arg" in
@@ -59,6 +57,14 @@ for arg in "$@"; do
             fi
             REBUILD=true
             ;;
+        --refresh)
+            if [[ "$REFRESH" == true ]]; then
+                echo "Error: --refresh was specified more than once." >&2
+                usage
+                exit 1
+            fi
+            REFRESH=true
+            ;;
         *)
             echo "Error: Invalid argument: $arg" >&2
             usage
@@ -66,6 +72,12 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+if [[ "$REBUILD" == true && "$REFRESH" == true ]]; then
+    echo "Error: --rebuild and --refresh cannot be used together." >&2
+    usage
+    exit 1
+fi
 
 case "$SELECTION" in
     wxvx)
@@ -142,11 +154,11 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
     fi
 done
 
-if [[ "$PROMPT_EXISTING" == true ]] && (( ${#EXISTING_ENVIRONMENTS[@]} > 0 )); then
+if [[ "$REBUILD" == false && "$REFRESH" == false ]] && (( ${#EXISTING_ENVIRONMENTS[@]} > 0 )); then
     echo "Existing environments: ${EXISTING_ENVIRONMENTS[*]}"
     echo "Rebuilding removes these environments and any packages added to them."
     if ! read -r -p "Remove and rebuild them? (Y/N) " answer; then
-        echo "Error: No answer received; use --rebuild to rebuild without prompting." >&2
+        echo "Error: No answer received; use --rebuild or --refresh to run without prompting." >&2
         exit 1
     fi
     case "$answer" in

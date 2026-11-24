@@ -110,6 +110,37 @@ for answer in N eof invalid; do
     for env in wxvx plot mdt; do [[ -x "$root/conda/envs/$env/bin/python" ]]; done
 done
 
+# Each named environment prompts and only the selected environment is rebuilt.
+for env in wxvx plot mdt; do
+    : > "$log"
+    printf 'N\n' | bash "$repo_root/sorc/build_ufsvrf.sh" "$env" > "$test_dir/output"
+    grep -Fxq "Existing environments: $env" "$test_dir/output"
+    [[ ! -s "$log" ]]
+
+    if bash "$repo_root/sorc/build_ufsvrf.sh" "$env" </dev/null > "$test_dir/output" 2>"$test_dir/error"; then
+        echo "Expected missing confirmation for $env to fail" >&2
+        exit 1
+    fi
+    grep -Fq "No answer received" "$test_dir/error"
+    [[ ! -s "$log" ]]
+
+    printf 'Y\n' | bash "$repo_root/sorc/build_ufsvrf.sh" "$env" > "$test_dir/output"
+    grep -Fxq "env remove --yes --prefix $root/conda/envs/$env" "$log"
+    grep -Fq "env create --prefix $root/conda/envs/$env" "$log"
+    for other in wxvx plot mdt; do
+        if [[ "$other" != "$env" ]] && grep -Eq "env (remove|create).*envs/$other" "$log"; then
+            echo "Changed unselected environment $other" >&2
+            exit 1
+        fi
+    done
+done
+
+# Explicitly selecting all also prompts instead of refreshing silently.
+: > "$log"
+printf 'N\n' | bash "$repo_root/sorc/build_ufsvrf.sh" all > "$test_dir/output"
+grep -Fxq "Existing environments: wxvx plot mdt" "$test_dir/output"
+[[ ! -s "$log" ]]
+
 # A selected rebuild removes and recreates only that environment.
 : > "$log"
 bash "$repo_root/sorc/build_ufsvrf.sh" wxvx --rebuild > "$test_dir/output"
@@ -181,7 +212,7 @@ for env in wxvx mdt; do
 done
 
 # Reject ambiguous argument combinations before doing any work.
-for args in 'wxvx plot' '--rebuild --rebuild' '--unknown'; do
+for args in 'wxvx plot' '--rebuild --rebuild' '--refresh --refresh' '--refresh --rebuild' '--unknown'; do
     : > "$log"
     # Intentional splitting supplies multiple arguments to the script.
     if bash "$repo_root/sorc/build_ufsvrf.sh" $args > "$test_dir/output" 2>"$test_dir/error"; then

@@ -71,14 +71,14 @@ for state in existing new; do
         rmdir "$env_dir/bin" "$env_dir"
     fi
     : > "$log"
-    bash "$repo_root/sorc/build_ufsvrf.sh" plot
+    bash "$repo_root/sorc/build_ufsvrf.sh" plot --refresh
     grep -Fxq "run --prefix $env_dir python -m pip install $root/eagle-tools" "$log"
     grep -Fxq "run --prefix $env_dir python -m pip install --no-deps --force-reinstall $root/eagle-tools" "$log"
     grep -Fxq "run --prefix $env_dir eagle-tools --help" "$log"
 done
 
 : > "$log"
-if FAIL_INSTALL=1 bash "$repo_root/sorc/build_ufsvrf.sh" plot; then
+if FAIL_INSTALL=1 bash "$repo_root/sorc/build_ufsvrf.sh" plot --refresh; then
     echo "Expected eagle-tools installation to fail" >&2
     exit 1
 fi

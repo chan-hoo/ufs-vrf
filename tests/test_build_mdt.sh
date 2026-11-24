@@ -68,7 +68,7 @@ export VIRTUAL_ENV="/unrelated/virtualenv"
 export UV_PROJECT_ENVIRONMENT="/unrelated/project"
 
 cd "$root"
-bash "$repo_root/sorc/build_ufsvrf.sh" mdt
+bash "$repo_root/sorc/build_ufsvrf.sh" mdt --refresh
 rm "$env_dir/bin/python" "$env_dir/bin/mdt"
 rmdir "$env_dir/bin" "$env_dir"
 bash "$repo_root/sorc/build_ufsvrf.sh" mdt

@@ -85,7 +85,7 @@ export PATH="$bin:$PATH" TEST_ROOT="$root" TEST_LOG="$log" EXPECTED_WXVX_ENV="$e
 cd "$root"
 
 # An existing environment must be updated, not skipped.
-bash "$repo_root/sorc/build_ufsvrf.sh" wxvx
+bash "$repo_root/sorc/build_ufsvrf.sh" wxvx --refresh
 grep -Fq "file://$root/conda/wxvx-channel::wxvx=0.8.1=py_0" "$log"
 grep -Fq "run --prefix $env_dir python -m pip install --no-deps --force-reinstall $root/eagle-tools" "$log"
 [[ -x "$env_dir/bin/wxvx" ]]
@@ -101,7 +101,7 @@ grep -Fq "run --prefix $env_dir python -m pip install $root/eagle-tools" "$log"
 
 # Build failures must not proceed to installation.
 : > "$log"
-if FAIL_BUILD=1 bash "$repo_root/sorc/build_ufsvrf.sh" wxvx; then
+if FAIL_BUILD=1 bash "$repo_root/sorc/build_ufsvrf.sh" wxvx --refresh; then
     echo "Expected wxvx build to fail" >&2
     exit 1
 fi

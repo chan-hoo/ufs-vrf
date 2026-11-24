@@ -38,23 +38,22 @@ cd ufs-vrf/sorc
 By default, the script builds the `wxvx`, `plot`, and `mdt` environments. To
 build only one environment, pass `wxvx`, `plot`, or `mdt` as an argument.
 
-With no arguments, the script asks before removing and rebuilding any existing
-environments. Answer `N` to cancel. To rebuild without prompting, run
+The script asks before removing and rebuilding any selected existing
+environments, including when one is named. Answer `N` to cancel. To rebuild without prompting, run
 `./build_ufsvrf.sh --rebuild` for all environments or, for example,
 `./build_ufsvrf.sh wxvx --rebuild` for one. Rebuilding removes packages added
 to the selected environments; deactivate an active environment first. Miniforge
-and its cache are retained. An environment argument without `--rebuild` refreshes
-the source packages as described below, but does not recreate the environment
-or reapply its YAML. The explicit `all` argument behaves the same way.
+and its cache are retained. Use `--refresh` instead to refresh source packages
+without recreating existing environments or reapplying their YAML.
 
 wxvx is built from the pinned `sorc/wxvx` submodule using its Conda recipe.
-Rerun `./build_ufsvrf.sh wxvx` after updating the submodule to rebuild and
+Rerun `./build_ufsvrf.sh wxvx --refresh` after updating the submodule to rebuild and
 install it into the wxvx environment. The build installs `conda-build` into
 the local Miniforge installation and requires access to the Conda channels.
 
 eagle-tools is installed with pip from the pinned `sorc/eagle-tools` submodule
-into both the wxvx and plot environments. Rerun `./build_ufsvrf.sh wxvx` and
-`./build_ufsvrf.sh plot` after updating it to refresh both installations.
+into both the wxvx and plot environments. Rerun `./build_ufsvrf.sh wxvx --refresh`
+and `./build_ufsvrf.sh plot --refresh` after updating it to refresh both installations.
 
 ## 2. Activate the wxvx Environment
 
@@ -83,7 +82,7 @@ mdt --help
 MDT is installed from the pinned `sorc/mdt` submodule using its committed
 `uv.lock`. Its environment is separate from the existing wxvx and plotting
 environments. If an earlier MDT installation failed, rerun
-`./build_ufsvrf.sh mdt` from `sorc` to synchronize the existing environment.
+`./build_ufsvrf.sh mdt --refresh` from `sorc` to synchronize the existing environment.
 
 ## 3. Configuration
 
