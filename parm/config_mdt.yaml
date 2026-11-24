@@ -1,0 +1,277 @@
+data:
+  gfs_model:
+    type: "gfs"
+    kwargs:
+      dates: "2023-08-01"
+      lead_time: [0, 6, 12, 18, 24]
+      filters:
+        shortName: "TMP"
+        typeOfFirstFixedSurface: 100
+      rename:
+        temperature: "temperature" # Kept as is or rename if needed, but wait: we can map TMP -> temperature
+        TMP: "temperature"
+      offset:
+        temperature: -273.15      # Kelvin to Celsius
+    zarr_store:
+      enabled: true
+      backend: "icechunk"
+      icechunk_url: "./zarr_stores/gfs_pressure_icechunk"
+      max_scan_attempts: 5
+      network_timeout: 60.0
+      max_concurrent_requests: 16
+
+  gefs_model:
+    type: "gefs"
+    kwargs:
+      start_date: "2023-01-01"
+      end_date: "2023-01-04"
+      product: "aerosol"
+      lead_time: [0, 3, 6, 9, 12, 15, 18, 21, 24]
+      filters:
+        typeOfFirstFixedSurface: 10 # Entire atmosphere aerosol variables
+        shortName: ["totAOD550"]
+    zarr_store:
+      enabled: true
+      backend: "icechunk"
+      icechunk_url: "./zarr_stores/gefs_aerosol_icechunk"
+      max_scan_attempts: 5
+      network_timeout: 300.0
+      max_concurrent_requests: 4
+
+  aeronet_obs:
+    type: "aeronet"
+    kwargs:
+      dates: "2023-01-01"
+
+  icap_mme_model:
+    type: "icap_mme"
+    kwargs:
+      dates: "2023-01-04"
+      product: "MMC"
+      data_var: "modeaod550"
+      download: true
+
+  igra2_obs:
+    type: "igra2"
+    kwargs:
+      dates: "2023-08-01"
+      site: "USM00072201"
+
+  ish_lite_obs:
+    type: "ish_lite"
+    kwargs:
+      dates: "2023-08-01"
+
+pairing:
+  pair_gfs_igra:
+    source: "gfs_model"
+    target: "igra2_obs"
+    method: "nearest"
+
+  pair_gfs_ish:
+    source: "gfs_model"
+    target: "ish_lite_obs"
+    method: "nearest"
+
+  pair_gefs_icap:
+    source: "gefs_model"
+    target: "icap_mme_model"
+    method: "bilinear"
+    kwargs:
+      merge: true
+      suffix: "_icap"
+
+  pair_gefs_obs:
+    source: "gefs_model"
+    target: "aeronet_obs"
+    method: "nearest"
+
+  pair_icap_obs:
+    source: "icap_mme_model"
+    target: "aeronet_obs"
+    method: "nearest"
+
+reductions:
+  gfs_igra_profile_average:
+    input: "pair_gfs_igra"
+    method: "mean"
+    dim: "node"
+
+combine:
+  obs_comparison:
+    sources:
+      - pair_gefs_obs
+      - pair_icap_obs
+    dim: "model"
+
+statistics:
+  met_stats:
+    input: "pair_gfs_ish"
+    metrics: ["rmse", "mb", "mae", "mse", "mape", "ioa_m", "fac2", "r2", "d1", "e1", "ac"]
+    kwargs:
+      obs_var: "t2m"
+      mod_var: "TMP_2maboveground"
+      savename: "gfs_ish_stats.md"
+
+  model_bias_stats:
+    input: "pair_gefs_icap"
+    metrics: ["mb"]
+    kwargs:
+      obs_var: "total_aod_mean"  # ICAP acts as reference
+      mod_var: "totAOD550"
+      dim: "time"
+
+  obs_stats:
+    input: "obs_comparison"
+    metrics: ["rmse", "mb", "corr"]
+    kwargs:
+      obs_var: "aod_551nm"
+      mod_var: "totAOD550"
+
+  profile_stats:
+    input: "gfs_igra_profile_average"
+    metrics: ["rmse", "mb", "mae", "r2"]
+    kwargs:
+      obs_var: "temp"                 # IGRA2 temperature variable
+      mod_var: "temperature"          # GFS temperature variable
+      savename: "gfs_igra_profile_stats.md"
+
+  wind_stats:
+    input: "pair_gfs_ish"
+    metrics: ["rmse", "mb", "mae", "mse", "mape", "ioa_m", "fac2", "r2", "d1", "e1", "ac"]
+    kwargs:
+      obs_var: "ws"
+      mod_var: "WSPD_10maboveground"
+      savename: "gfs_ish_wind_stats.md"
+
+plots:
+  conditional_quantile_temp:
+    input: "pair_gfs_ish"
+    type: "conditional_quantile"
+    kwargs:
+      savename: "gfs_ish_conditional_quantile.png"
+      obs_col: "t2m"
+      mod_col: "TMP_2maboveground"
+
+  conditional_quantile_temp:
+    input: "pair_gfs_ish"
+    type: "conditional_quantile"
+    kwargs:
+      savename: "gfs_ish_ws_conditional_quantile.png"
+      obs_col: "ws"
+      mod_col: "WSPD_10maboveground"
+
+  model_bias_map:
+    input: "model_bias_stats"
+    type: "spatial"
+    kwargs:
+      savename: "gefs_vs_icap_bias.png"
+      title: "GEFS minus ICAP-MME Mean Bias"
+      cmap: "RdBu_r"
+      vmin: -0.5
+      vmax: 0.5
+      style: "pivotal_weather"
+
+  radar_plot:
+    input: "pair_gfs_ish"
+    type: "radar"
+    kwargs:
+      savename: "gfs_ish_radar.png"
+      obs_col: "t2m"
+      mod_cols: ["TMP_2maboveground"]
+
+  obs_spatial_map:
+    input: "obs_comparison"
+    type: "spatial"
+    kwargs:
+      title: "GEFS and ICAP-MME vs AERONET (RMSE)"
+      obs_var: "aod_551nm"
+      mod_var:
+        - "totAOD550"
+        - "modeaod550"
+      savename: "obs_comparison_map.png"
+
+  scatter_temp:
+    input: "pair_gfs_ish"
+    type: "scatter"
+    kwargs:
+      savename: "gfs_ish_scatter.png"
+      x: "t2m"
+      y: "TMP_2maboveground"
+      title: "GFS vs ISH-Lite Temperature"
+
+  scatter_wind:
+    input: "pair_gfs_ish"
+    type: "scatter"
+    kwargs:
+      savename: "gfs_ish_wind_scatter.png"
+      x: "ws"
+      y: "WSPD_10maboveground"
+      title: "GFS vs ISH-Lite Wind Speed"
+
+  spatial_bias:
+    input: "pair_gfs_ish"
+    type: "spatial_bias_scatter"
+    kwargs:
+      savename: "gfs_ish_spatial_bias.png"
+      col1: "t2m"
+      col2: "TMP_2maboveground"
+      fact: 0.03
+
+  spatial_bias:
+    input: "pair_gfs_ish"
+    type: "spatial_bias_scatter"
+    kwargs:
+      savename: "gfs_ish_wind_spatial_bias.png"
+      col1: "ws"
+      col2: "WSPD_10maboveground"
+      fact: 0.03
+
+  taylor_temp:
+    input: "pair_gfs_ish"
+    type: "taylor"
+    kwargs:
+      savename: "gfs_ish_taylor.png"
+      col1: "t2m"
+      col2: "TMP_2maboveground"
+      label1: "GFS vs ISH-Lite"
+
+  timeseries_temp:
+    input: "pair_gfs_ish"
+    type: "timeseries"
+    kwargs:
+      savename: "gfs_ish_temp_ts.png"
+      spatial_mean: true
+      columns:
+        t2m:
+          label: "ISH-Lite"
+          color: "black"
+        TMP_2maboveground:
+          label: "GFS"
+          color: "green"
+
+  timeseries_rmse:
+    input: "pair_gfs_ish"
+    type: "timeseriesstat"
+    kwargs:
+      savename: "gfs_ish_wind_timeseries_rmse.png"
+      var1: "ws"
+      var2: "WSPD_10maboveground"
+      freq: "3h"
+      stat: "rmse"
+      markersize: 1
+
+  vertical_profile_comparison:
+    input: "gfs_igra_profile_average"
+    type: "profile"
+    kwargs:
+      savename: "gfs_igra_profile_comparison.png"
+      var2: "press"                  # Pressure Level on Y-axis
+      columns:
+        temp:
+          label: "IGRA"
+          color: "black"
+        temperature:
+          label: "GFS"
+          color: "red"
+
