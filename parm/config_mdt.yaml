@@ -153,7 +153,7 @@ plots:
       obs_col: "t2m"
       mod_col: "TMP_2maboveground"
 
-  conditional_quantile_temp:
+  conditional_quantile_wind:
     input: "pair_gfs_ish"
     type: "conditional_quantile"
     kwargs:
@@ -218,7 +218,7 @@ plots:
       col2: "TMP_2maboveground"
       fact: 0.03
 
-  spatial_bias:
+  spatial_bias_wind:
     input: "pair_gfs_ish"
     type: "spatial_bias_scatter"
     kwargs:

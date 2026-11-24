@@ -16,6 +16,7 @@ Expected input structure:
 
     parm/
     ├── config_base.yaml
+    ├── config_mdt.yaml
     ├── config_platform.yaml
     ├── templates/
     │   └── template.jobcard_task
@@ -1194,6 +1195,15 @@ class ConfigGenerator:
         tasks = self.config["tasks"]
         task_list = self.validate_task_list()
 
+        mdt_config: dict[str, Any] = {}
+        if any(name.startswith("mdt_") for name in task_list):
+            mdt_path = self.script_dir / "config_mdt.yaml"
+            with mdt_path.open("r", encoding="utf-8") as stream:
+                loaded_mdt_config = yaml.safe_load(stream)
+            if not isinstance(loaded_mdt_config, dict):
+                raise ValueError(f"{mdt_path} must contain a mapping.")
+            mdt_config = loaded_mdt_config
+
         for task_name in task_list:
             task_definition = tasks[task_name]
 
@@ -1205,21 +1215,52 @@ class ConfigGenerator:
             group_names = task_definition.get("groups", [])
             hpc_params = task_definition.get("hpc", {})
 
-            if not isinstance(group_names, list):
-                raise ValueError(
-                    f"Task '{task_name}': 'groups' must be a list."
-                )
-
             if not isinstance(hpc_params, dict):
                 raise ValueError(
                     f"Task '{task_name}': 'hpc' must be a dictionary."
                 )
 
-            task_config = self.build_task_config(
-                task_name=task_name,
-                group_names=group_names,
-                hpc_params=hpc_params,
-            )
+            if task_name.startswith("mdt_"):
+                if not isinstance(group_names, dict):
+                    raise ValueError(
+                        f"Task '{task_name}': 'groups' must be a mapping."
+                    )
+
+                task_config = {}
+                for section, names in group_names.items():
+                    if not isinstance(section, str):
+                        raise ValueError(
+                            f"Task '{task_name}': invalid MDT section {section!r}."
+                        )
+                    if not isinstance(names, list) or not all(
+                        isinstance(name, str) for name in names
+                    ):
+                        raise ValueError(
+                            f"Task '{task_name}': invalid names for {section!r}."
+                        )
+                    source = mdt_config.get(section)
+                    if not isinstance(source, dict):
+                        raise ValueError(
+                            f"Task '{task_name}': unknown MDT section {section!r}."
+                        )
+                    missing = [name for name in names if name not in source]
+                    if missing:
+                        raise ValueError(
+                            f"Task '{task_name}': unknown {section} entries: {missing}"
+                        )
+                    task_config[section] = {
+                        name: deepcopy(source[name]) for name in names
+                    }
+            else:
+                if not isinstance(group_names, list):
+                    raise ValueError(
+                        f"Task '{task_name}': 'groups' must be a list."
+                    )
+                task_config = self.build_task_config(
+                    task_name=task_name,
+                    group_names=group_names,
+                    hpc_params=hpc_params,
+                )
 
             output_file = self.write_task_config(
                 task_name=task_name,

@@ -96,6 +96,7 @@ The main configuration files are:
 
 - `config_base.yaml`: Define the basic configuration parameters.
 - `config_platform.yaml`: Define the platform-specific configuration parameters.
+- `config_mdt.yaml`: Define the sections and named entries used by MDT tasks.
 
 Before proceeding, review the `account`, `exp_case_name`, and `platform` parameters.
 
@@ -104,6 +105,10 @@ vim config_base.yaml
 ```
 
 You can check the list of tasks selected by `task_list` from the available tasks under the `tasks` group.
+For tasks named `mdt_*`, specify `groups` as a mapping from MDT section names
+to lists of entry names. Setup writes the selected entries, retaining their
+sections, to `configs/config_<task>.yaml`. Other tasks continue to use a list
+of base configuration groups.
 
 Run the setup script to generate the experimental-case configuration and supporting directories:
 
