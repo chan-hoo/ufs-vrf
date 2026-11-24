@@ -35,6 +35,15 @@ cd ufs-vrf/sorc
 By default, the script builds the `wxvx`, `plot`, and `mdt` environments. To
 build only one environment, pass `wxvx`, `plot`, or `mdt` as an argument.
 
+With no arguments, the script asks before removing and rebuilding any existing
+environments. Answer `N` to cancel. To rebuild without prompting, run
+`./build_ufsvrf.sh --rebuild` for all environments or, for example,
+`./build_ufsvrf.sh wxvx --rebuild` for one. Rebuilding removes packages added
+to the selected environments; deactivate an active environment first. Miniforge
+and its cache are retained. An environment argument without `--rebuild` refreshes
+the source packages as described below, but does not recreate the environment
+or reapply its YAML. The explicit `all` argument behaves the same way.
+
 wxvx is built from the pinned `sorc/wxvx` submodule using its Conda recipe.
 Rerun `./build_ufsvrf.sh wxvx` after updating the submodule to rebuild and
 install it into the wxvx environment. The build installs `conda-build` into

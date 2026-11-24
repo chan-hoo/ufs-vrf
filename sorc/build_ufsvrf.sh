@@ -26,7 +26,48 @@ echo "Environment path:  $CONDA_ENVS_PATH"
 # Select environments to build
 # ==============================================================
 
-case "${1:-all}" in
+usage() {
+    echo "Usage: $0 [wxvx|plot|mdt|all] [--rebuild]" >&2
+    echo "  No argument: Build all environments, prompting before replacing existing ones" >&2
+    echo "  --rebuild: Remove and recreate selected environments without prompting" >&2
+}
+
+SELECTION="all"
+REBUILD=false
+SELECTION_SET=false
+PROMPT_EXISTING=false
+if (( $# == 0 )); then
+    PROMPT_EXISTING=true
+fi
+
+for arg in "$@"; do
+    case "$arg" in
+        wxvx|plot|mdt|all)
+            if [[ "$SELECTION_SET" == true ]]; then
+                echo "Error: Specify only one environment selection." >&2
+                usage
+                exit 1
+            fi
+            SELECTION="$arg"
+            SELECTION_SET=true
+            ;;
+        --rebuild)
+            if [[ "$REBUILD" == true ]]; then
+                echo "Error: --rebuild was specified more than once." >&2
+                usage
+                exit 1
+            fi
+            REBUILD=true
+            ;;
+        *)
+            echo "Error: Invalid argument: $arg" >&2
+            usage
+            exit 1
+            ;;
+    esac
+done
+
+case "$SELECTION" in
     wxvx)
         ENVIRONMENTS=("wxvx")
         ;;
@@ -39,19 +80,7 @@ case "${1:-all}" in
     all)
         ENVIRONMENTS=("wxvx" "plot" "mdt")
         ;;
-    *)
-        echo "Error: Invalid environment: $1" >&2
-        echo "Usage: $0 [wxvx|plot|mdt]" >&2
-        echo "  No argument: Build all environments" >&2
-        exit 1
-        ;;
 esac
-
-if (( $# > 1 )); then
-    echo "Error: Too many arguments." >&2
-    echo "Usage: $0 [wxvx|plot|mdt]" >&2
-    exit 1
-fi
 
 if [[ " ${ENVIRONMENTS[*]} " == *" wxvx "* ]] &&
     [[ ! -f "$INSTALL_ROOT/wxvx/recipe/meta.yaml" || ! -f "$INSTALL_ROOT/wxvx/src/wxvx/resources/info.json" ]]; then
@@ -74,6 +103,13 @@ if [[ " ${ENVIRONMENTS[*]} " == *" mdt "* ]] &&
     exit 1
 fi
 
+for ENV_NAME in "${ENVIRONMENTS[@]}"; do
+    if [[ ! -f "$INSTALL_ROOT/${ENV_NAME}.yaml" ]]; then
+        echo "Error: Environment YAML not found: $INSTALL_ROOT/${ENV_NAME}.yaml" >&2
+        exit 1
+    fi
+done
+
 # ==============================================================
 # Detect architecture
 # ==============================================================
@@ -93,6 +129,42 @@ case "$(uname -s)-$(uname -m)" in
 esac
 
 echo "Architecture:      $ARCH"
+
+EXISTING_ENVIRONMENTS=()
+for ENV_NAME in "${ENVIRONMENTS[@]}"; do
+    ENV_PREFIX="$CONDA_ENVS_PATH/$ENV_NAME"
+    if [[ -x "$ENV_PREFIX/bin/python" ]]; then
+        EXISTING_ENVIRONMENTS+=("$ENV_NAME")
+    elif [[ -e "$ENV_PREFIX" ]]; then
+        echo "Error: $ENV_PREFIX exists but does not appear to be a valid Python environment." >&2
+        echo "Please inspect the directory before proceeding." >&2
+        exit 1
+    fi
+done
+
+if [[ "$PROMPT_EXISTING" == true ]] && (( ${#EXISTING_ENVIRONMENTS[@]} > 0 )); then
+    echo "Existing environments: ${EXISTING_ENVIRONMENTS[*]}"
+    echo "Rebuilding removes these environments and any packages added to them."
+    if ! read -r -p "Remove and rebuild them? (Y/N) " answer; then
+        echo "Error: No answer received; use --rebuild to rebuild without prompting." >&2
+        exit 1
+    fi
+    case "$answer" in
+        y|Y|yes|YES|Yes) REBUILD=true ;;
+        n|N|no|NO|No) echo "Build cancelled; no environments were removed."; exit 0 ;;
+        *) echo "Error: Please answer Y or N; no environments were removed." >&2; exit 1 ;;
+    esac
+fi
+
+if [[ "$REBUILD" == true ]] && (( ${#EXISTING_ENVIRONMENTS[@]} > 0 )); then
+    for ENV_NAME in "${EXISTING_ENVIRONMENTS[@]}"; do
+        ENV_PREFIX="$CONDA_ENVS_PATH/$ENV_NAME"
+        if [[ "${CONDA_PREFIX:-}" == "$ENV_PREFIX" ]]; then
+            echo "Error: $ENV_PREFIX is active. Deactivate it before rebuilding." >&2
+            exit 1
+        fi
+    done
+fi
 
 # ==============================================================
 # Install Miniforge locally
@@ -232,33 +304,29 @@ for ENV_NAME in "${ENVIRONMENTS[@]}"; do
     ENV_PREFIX="$CONDA_ENVS_PATH/$ENV_NAME"
 
     # ----------------------------------------------------------
-    # Check environment YAML
-    # ----------------------------------------------------------
-
-    if [[ ! -f "$ENV_FILE" ]]; then
-        echo "Error: Environment YAML not found: $ENV_FILE" >&2
-        exit 1
-    fi
-
-    # ----------------------------------------------------------
-    # Skip existing environments
+    # Rebuild or update existing environments
     # ----------------------------------------------------------
 
     if [[ -x "$ENV_PREFIX/bin/python" ]]; then
         echo "Found existing environment: $ENV_PREFIX"
-        if [[ "$ENV_NAME" == "wxvx" ]]; then
-            echo "Building and installing wxvx from the submodule."
-            sync_wxvx
-        elif [[ "$ENV_NAME" == "mdt" ]]; then
-            echo "Synchronizing and verifying MDT."
-            sync_mdt
-            conda run --prefix "$ENV_PREFIX" mdt --version
+        if [[ "$REBUILD" == true ]]; then
+            echo "Removing environment: $ENV_PREFIX"
+            conda env remove --yes --prefix "$ENV_PREFIX"
+        else
+            if [[ "$ENV_NAME" == "wxvx" ]]; then
+                echo "Building and installing wxvx from the submodule."
+                sync_wxvx
+            elif [[ "$ENV_NAME" == "mdt" ]]; then
+                echo "Synchronizing and verifying MDT."
+                sync_mdt
+                conda run --prefix "$ENV_PREFIX" mdt --version
+            fi
+            if [[ "$ENV_NAME" != "mdt" ]]; then
+                echo "Installing eagle-tools from the submodule."
+                sync_eagle_tools "$ENV_PREFIX"
+            fi
+            continue
         fi
-        if [[ "$ENV_NAME" != "mdt" ]]; then
-            echo "Installing eagle-tools from the submodule."
-            sync_eagle_tools "$ENV_PREFIX"
-        fi
-        continue
     fi
 
     if [[ -e "$ENV_PREFIX" ]]; then
