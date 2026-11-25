@@ -1,8 +1,9 @@
-# ufs-vrf
+# Unified Forecast System Verification Framework (UFS-VRF)
 
-**Weather Verification (wxvx) for Unified Forecat System (UFS) including Global Workflow, EAGLE, and RRFS**
-
-This repository provides scripts to install and configure [`wxvx`](https://github.com/NOAA-GSL/wxvx) for use with UFS applications, including Global workflow and RRFS workflow, on NOAA RDHPCS platforms ([user's guide](https://wxvx4ufs.readthedocs.io/en/latest/index.html)).
+UFS-VRF provides a framework for configuring and running weather verification
+for Unified Forecast System (UFS) applications, including Global Workflow,
+EAGLE, and RRFS, on NOAA RDHPCS platforms. It brings together wxvx, MDT, and
+supporting tools ([user's guide](https://wxvx4ufs.readthedocs.io/en/latest/index.html)).
 
 ## 1. Build and Installation
 

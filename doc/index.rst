@@ -1,7 +1,8 @@
-ufs-vrf Documentation
-======================
+Unified Forecast System Verification Framework (UFS-VRF)
+========================================================
 
-Welcome to the **ufs-vrf** documentation.
+Welcome to the **Unified Forecast System Verification Framework (UFS-VRF)**
+documentation.
 
 .. toctree::
    :maxdepth: 2

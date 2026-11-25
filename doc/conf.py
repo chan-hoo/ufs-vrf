@@ -1,8 +1,8 @@
-"""Sphinx configuration for ufs-vrf documentation."""
+"""Sphinx configuration for the UFS-VRF documentation."""
 
-project = "ufs-vrf"
-copyright = "2026, ufs-vrf contributors"
-author = "ufs-vrf contributors"
+project = "Unified Forecast System Verification Framework (UFS-VRF)"
+copyright = "2026, Unified Forecast System Verification Framework contributors"
+author = "Unified Forecast System Verification Framework contributors"
 
 extensions = ["myst_parser"]
 
