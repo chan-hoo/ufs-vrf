@@ -88,13 +88,13 @@ Before proceeding, review the parameters `account` ,`exp_case_name`, and `platfo
 vim config.yaml
 ```
 - Available options:
+  - `forecast_type`: eagle, hrrrcast, global_workflow
   - `platform`: ursa, hercules, gaea-c6, orion, derecho
   - `run_type`: ctest
   - `truth_grid_model`: GFS, HRRR
   - `truth_obs_model`: PREPBUFR
   - `truth_prcp_model`: STAGEIV
   - `workflow_manager`: ecflow, None
-  - `forecast_type`: eagle, hrrrcast, global_workflow
 
 Run the set-up script to generate the experimental case configuration and supporting directories:
 
