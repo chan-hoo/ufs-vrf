@@ -1255,6 +1255,39 @@ class ConfigGenerator:
                     task_config[section] = {
                         name: deepcopy(source[name]) for name in names
                     }
+                
+                # For 'data' section, populate dates from common/cycles
+                if "data" in task_config:
+                    cycles = self.config.get("common", {}).get("cycles", {})
+                    start_date_str = cycles.get("start")
+                    stop_date_str = cycles.get("stop")
+                    
+                    if start_date_str:
+                        # Parse to datetime and format as YYYY-MM-DD
+                        if isinstance(start_date_str, str):
+                            start_dt = datetime.fromisoformat(str(start_date_str))
+                        else:
+                            start_dt = start_date_str
+                        start_date_formatted = start_dt.strftime("%Y-%m-%d")
+                        stop_date_formatted = start_date_formatted
+                        
+                        if stop_date_str and stop_date_str != start_date_str:
+                            if isinstance(stop_date_str, str):
+                                stop_dt = datetime.fromisoformat(str(stop_date_str))
+                            else:
+                                stop_dt = stop_date_str
+                            stop_date_formatted = stop_dt.strftime("%Y-%m-%d")
+                        
+                        # Populate dates in all data items
+                        for data_name, data_item in task_config["data"].items():
+                            if isinstance(data_item, dict) and "kwargs" in data_item:
+                                kwargs = data_item["kwargs"]
+                                if "dates" in kwargs:
+                                    kwargs["dates"] = start_date_formatted
+                                if "start_date" in kwargs:
+                                    kwargs["start_date"] = start_date_formatted
+                                if "end_date" in kwargs:
+                                    kwargs["end_date"] = stop_date_formatted
             else:
                 if not isinstance(group_names, list):
                     raise ValueError(

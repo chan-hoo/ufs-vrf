@@ -1,8 +1,12 @@
+# NOTE: Date fields (dates, start_date, end_date) are automatically
+# populated from common/cycles in config_base.yaml by setup.py.
+# Users should not modify these date values.
+
 data:
   gfs_model:
     type: "gfs"
     kwargs:
-      dates: "2023-08-01"
+      dates: ~  # Auto-filled from common/cycles.start
       lead_time: [0, 6, 12, 18, 24]
       filters:
         shortName: "TMP"
@@ -23,8 +27,8 @@ data:
   gefs_model:
     type: "gefs"
     kwargs:
-      start_date: "2023-01-01"
-      end_date: "2023-01-04"
+      start_date: ~  # Auto-filled from common/cycles.start
+      end_date: ~  # Auto-filled from common/cycles.stop
       product: "aerosol"
       lead_time: [0, 3, 6, 9, 12, 15, 18, 21, 24]
       filters:
@@ -41,12 +45,12 @@ data:
   aeronet_obs:
     type: "aeronet"
     kwargs:
-      dates: "2023-01-01"
+      dates: ~  # Auto-filled from common/cycles.start
 
   icap_mme_model:
     type: "icap_mme"
     kwargs:
-      dates: "2023-01-04"
+      dates: ~  # Auto-filled from common/cycles.start
       product: "MMC"
       data_var: "modeaod550"
       download: true
@@ -54,13 +58,13 @@ data:
   igra2_obs:
     type: "igra2"
     kwargs:
-      dates: "2023-08-01"
+      dates: ~  # Auto-filled from common/cycles.start
       site: "USM00072201"
 
   ish_lite_obs:
     type: "ish_lite"
     kwargs:
-      dates: "2023-08-01"
+      dates: ~  # Auto-filled from common/cycles.start
 
 pairing:
   pair_gfs_igra:
