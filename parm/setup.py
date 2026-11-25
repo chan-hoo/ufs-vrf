@@ -811,6 +811,7 @@ class ConfigGenerator:
                 "envir": envir,
                 "exp_case_path": str(exp_case_path),
                 "external_data": external_data,
+                "forecast_type": app_config.get("forecast_type"),
                 "HOMEufsvrf": str(self.repo_dir),
                 "KEEPDATA": keepdata,
                 "memory_flag": bool(hpc.get("memory_per_node")),
@@ -835,7 +836,6 @@ class ConfigGenerator:
                 "task_name_upper": task_name.upper(),
                 "walltime": hpc.get("walltime", "00:30:00"),
                 "workflow_manager": app_config.get("workflow_manager"),
-                "forecast_type": app_config.get("forecast_type"),
             }
 
             if app_config.get("forecast_type") == "hrrrcast":
