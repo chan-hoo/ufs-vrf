@@ -1,12 +1,12 @@
 app:
   account: epic
   exp_case_name: test_gw_gfs
+  forecast_type: global_workflow
   platform: ursa
   run_type: ctest
   truth_grid_model: GFS
   truth_obs_model: PREPBUFR
   workflow_manager: ecflow
-  forecast_type: global_workflow
 nco_vars:
   COMINglobal_workflow: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/global_workflow/forecast'
   envir: test

@@ -1,12 +1,12 @@
 app:
   account: epic
   exp_case_name: test_hrrrcast
+  forecast_type: hrrrcast
   platform: ursa
   run_type: ctest
   truth_grid_model: HRRR
   truth_obs_model: PREPBUFR
   workflow_manager: ecflow
-  forecast_type: hrrrcast
 nco_vars:
   COMINhrrrcast: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/hrrrcast/hrrrcast_forecast'
   envir: test

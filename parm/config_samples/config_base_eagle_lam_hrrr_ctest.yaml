@@ -1,13 +1,13 @@
 app:
   account: epic
   exp_case_name: test_eagle_lam
+  forecast_type: eagle
   platform: ursa
   run_type: ctest
   truth_grid_model: HRRR
   truth_obs_model: PREPBUFR
   truth_prcp_model: STAGEIV
   workflow_manager: ecflow
-  forecast_type: eagle
 nco_vars:
   COMINeagle: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test
