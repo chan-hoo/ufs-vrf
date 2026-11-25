@@ -209,7 +209,7 @@ plots:
       y: "WSPD_10maboveground"
       title: "GFS vs ISH-Lite Wind Speed"
 
-  spatial_bias:
+  spatial_bias_temp:
     input: "pair_gfs_ish"
     type: "spatial_bias_scatter"
     kwargs:

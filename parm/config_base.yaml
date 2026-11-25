@@ -27,7 +27,7 @@ task_list:
   - postwxvx_grid
   - postwxvx_obs
   - postwxvx_prcp
-  - mdt_tmp
+  - mdt_temp
   - mdt_wind
   - mdt_aod
 # Shared leadtimes belong in common. For different verification windows,
@@ -107,7 +107,7 @@ tasks:
       nprocs: 1
       walltime: "00:05:00"
     external_data: false
-  mdt_tmp:
+  mdt_temp:
     groups:
       data: [gfs_model, igra2_obs]
       pairing: [pair_gfs_igra]
