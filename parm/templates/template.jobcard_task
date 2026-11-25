@@ -107,15 +107,16 @@ export DCOMROOT="${DCOMROOT:-${OPSROOT}/dcom}"
 # Intermediate calls for some NCO variables in J-job
 export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
-{%- if forecast_type == "hrrrcast" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- set wxvx_grid_tasks = ["vx_grid2grid", "vx_grid2obs"] %}
+{%- if forecast_type == "hrrrcast" and task_name in wxvx_grid_tasks %}
 export COMINhrrrcast="${COMINhrrrcast:-{{ COMINhrrrcast }}}"
 {%- elif forecast_type == "eagle" and task_name == "prewxvx" %}
 export COMINeagle="${COMINeagle:-{{ COMINeagle }}}"
-{%- elif forecast_type == "gefs" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- elif forecast_type == "gefs" and task_name in wxvx_grid_tasks %}
 export COMINgefs="${COMINgefs:-{{ COMINgefs }}}"
-{%- elif forecast_type == "gfs" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- elif forecast_type == "gfs" and task_name in wxvx_grid_tasks %}
 export COMINgfs="${COMINgfs:-{{ COMINgfs }}}"
-{%- elif forecast_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- elif forecast_type == "global_workflow" and task_name in wxvx_grid_tasks %}
 export COMINglobal_workflow="${COMINglobal_workflow:-{{ COMINglobal_workflow }}}"
 {%- endif %}
 # Path to experimental case directory
