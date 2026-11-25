@@ -111,6 +111,10 @@ export RUN="${RUN:-{{ RUN }}}"
 export COMINhrrrcast="${COMINhrrrcast:-{{ COMINhrrrcast }}}"
 {%- elif forecast_type == "eagle" and task_name == "prewxvx" %}
 export COMINeagle="${COMINeagle:-{{ COMINeagle }}}"
+{%- elif forecast_type == "gefs" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+export COMINgefs="${COMINgefs:-{{ COMINgefs }}}"
+{%- elif forecast_type == "gfs" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+export COMINgfs="${COMINgfs:-{{ COMINgfs }}}"
 {%- elif forecast_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
 export COMINglobal_workflow="${COMINglobal_workflow:-{{ COMINglobal_workflow }}}"
 {%- endif %}

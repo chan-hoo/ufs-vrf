@@ -842,6 +842,10 @@ class ConfigGenerator:
                 context["COMINhrrrcast"] = nco_vars["COMINhrrrcast"]
             elif app_config.get("forecast_type") == "eagle":
                 context["COMINeagle"] = nco_vars["COMINeagle"]
+            elif app_config.get("forecast_type") == "gefs":
+                context["COMINgefs"] = nco_vars["COMINgefs"]
+            elif app_config.get("forecast_type") == "gfs":
+                context["COMINgfs"] = nco_vars["COMINgfs"]
             elif app_config.get("forecast_type") == "global_workflow":
                 context["COMINglobal_workflow"] = nco_vars["COMINglobal_workflow"]
 
