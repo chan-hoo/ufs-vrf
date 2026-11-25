@@ -107,16 +107,16 @@ export DCOMROOT="${DCOMROOT:-${OPSROOT}/dcom}"
 # Intermediate calls for some NCO variables in J-job
 export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
-{%- set wxvx_grid_tasks = ["vx_grid2grid", "vx_grid2obs"] %}
-{%- if forecast_type == "hrrrcast" and task_name in wxvx_grid_tasks %}
+{%- set comin_tasks = ["vx_grid2grid", "vx_grid2obs", "mdt_temp", "mdt_wind", "mdt_aod"] %}
+{%- if forecast_type == "hrrrcast" and task_name in comin_tasks %}
 export COMINhrrrcast="${COMINhrrrcast:-{{ COMINhrrrcast }}}"
 {%- elif forecast_type == "eagle" and task_name == "prewxvx" %}
 export COMINeagle="${COMINeagle:-{{ COMINeagle }}}"
-{%- elif forecast_type == "gefs" and task_name in wxvx_grid_tasks %}
+{%- elif forecast_type == "gefs" and task_name in comin_tasks %}
 export COMINgefs="${COMINgefs:-{{ COMINgefs }}}"
-{%- elif forecast_type == "gfs" and task_name in wxvx_grid_tasks %}
+{%- elif forecast_type == "gfs" and task_name in comin_tasks %}
 export COMINgfs="${COMINgfs:-{{ COMINgfs }}}"
-{%- elif forecast_type == "global_workflow" and task_name in wxvx_grid_tasks %}
+{%- elif forecast_type == "global_workflow" and task_name in comin_tasks %}
 export COMINglobal_workflow="${COMINglobal_workflow:-{{ COMINglobal_workflow }}}"
 {%- endif %}
 # Path to experimental case directory
