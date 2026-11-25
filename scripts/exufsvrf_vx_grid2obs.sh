@@ -14,20 +14,20 @@ external_data=$(printf '%s' "${external_data}" | tr '[:upper:]' '[:lower:]')
 platform=$(read_yaml "${config_common}" "platform")
 run_type=$(read_yaml "${config_common}" "run_type")
 truth_obs_model=$(read_yaml "${config_common}" "truth_obs_model")
-workflow_type=$(read_yaml "${config_common}" "workflow_type")
+forecast_type=$(read_yaml "${config_common}" "forecast_type")
 
 # Copy pre-downloaded data files for c-test to temporary working directory.
 if [[ "${run_type}" == "ctest" ]]; then
   # Truth data
   if [[ "${external_data}" == "false" ]]; then
-    cp -rp "${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/truth_obs/${truth_obs_model}/obs" ${DATA}/.
+    cp -rp "${FIXufsvrf}/data_${platform}/ctest/${forecast_type}/truth_obs/${truth_obs_model}/obs" ${DATA}/.
   fi
 fi
 
 # Copy pre-processed forecast data if needed.
-if [[ "${workflow_type}" == "eagle" ]]; then
+if [[ "${forecast_type}" == "eagle" ]]; then
   ## Fallback data
-  fallback_prewxvx="${FIXufsvrf}/data_${platform}/ctest/${workflow_type}/post_prewxvx"
+  fallback_prewxvx="${FIXufsvrf}/data_${platform}/ctest/${forecast_type}/post_prewxvx"
   if [[ -d "${COMIN}/post_prewxvx" ]] && [[ -n "$(ls -A "${COMIN}/post_prewxvx")" ]]; then
     cp -rp "${COMIN}/post_prewxvx" "${DATA}/."
     echo "Using prewxvx results from ${COMIN}/post_prewxvx"

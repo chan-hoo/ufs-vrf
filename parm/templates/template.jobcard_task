@@ -107,11 +107,11 @@ export DCOMROOT="${DCOMROOT:-${OPSROOT}/dcom}"
 # Intermediate calls for some NCO variables in J-job
 export NET="${NET:-{{ NET }}}"
 export RUN="${RUN:-{{ RUN }}}"
-{%- if workflow_type == "hrrrcast" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- if forecast_type == "hrrrcast" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
 export COMINhrrrcast="${COMINhrrrcast:-{{ COMINhrrrcast }}}"
-{%- elif workflow_type == "eagle" and task_name == "prewxvx" %}
+{%- elif forecast_type == "eagle" and task_name == "prewxvx" %}
 export COMINeagle="${COMINeagle:-{{ COMINeagle }}}"
-{%- elif workflow_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
+{%- elif forecast_type == "global_workflow" and (task_name == "vx_grid2grid" or task_name == "vx_grid2obs") %}
 export COMINglobal_workflow="${COMINglobal_workflow:-{{ COMINglobal_workflow }}}"
 {%- endif %}
 # Path to experimental case directory

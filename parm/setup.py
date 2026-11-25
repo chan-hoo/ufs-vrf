@@ -835,14 +835,14 @@ class ConfigGenerator:
                 "task_name_upper": task_name.upper(),
                 "walltime": hpc.get("walltime", "00:30:00"),
                 "workflow_manager": app_config.get("workflow_manager"),
-                "workflow_type": app_config.get("workflow_type"),
+                "forecast_type": app_config.get("forecast_type"),
             }
 
-            if app_config.get("workflow_type") == "hrrrcast":
+            if app_config.get("forecast_type") == "hrrrcast":
                 context["COMINhrrrcast"] = nco_vars["COMINhrrrcast"]
-            elif app_config.get("workflow_type") == "eagle":
+            elif app_config.get("forecast_type") == "eagle":
                 context["COMINeagle"] = nco_vars["COMINeagle"]
-            elif app_config.get("workflow_type") == "global_workflow":
+            elif app_config.get("forecast_type") == "global_workflow":
                 context["COMINglobal_workflow"] = nco_vars["COMINglobal_workflow"]
 
             # Render the template.

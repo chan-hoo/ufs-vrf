@@ -7,7 +7,7 @@ app:
   truth_obs_model: PREPBUFR
   truth_prcp_model: STAGEIV
   workflow_manager: ecflow
-  workflow_type: eagle
+  forecast_type: eagle
 nco_vars:
   COMINeagle: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test

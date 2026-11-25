@@ -94,7 +94,7 @@ vim config.yaml
   - `truth_obs_model`: PREPBUFR
   - `truth_prcp_model`: STAGEIV
   - `workflow_manager`: ecflow, None
-  - `workflow_type`: eagle, hrrrcast, global_workflow
+  - `forecast_type`: eagle, hrrrcast, global_workflow
 
 Run the set-up script to generate the experimental case configuration and supporting directories:
 

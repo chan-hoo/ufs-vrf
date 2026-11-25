@@ -6,7 +6,7 @@ app:
   truth_grid_model: GFS
   truth_obs_model: PREPBUFR
   workflow_manager: ecflow
-  workflow_type: eagle
+  forecast_type: eagle
 nco_vars:
   COMINeagle: '{{ HOMEufsvrf }}/fix/data_{{ app.platform }}/ctest/eagle/inference_output'
   envir: test
